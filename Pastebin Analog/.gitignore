@@ -1,0 +1,9 @@
+.env
+
+__pycache__
+
+server/apps/users/migrations/*
+
+*.sqlite3
+
+request.log
