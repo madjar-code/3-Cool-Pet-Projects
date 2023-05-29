@@ -1,7 +1,7 @@
 import os, sys, environ
-import string
 from datetime import timedelta
 from pathlib import Path
+from string import ascii_letters, digits
 
 env = environ.Env()
 environ.Env.read_env()
@@ -153,8 +153,12 @@ STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / 'static'
 
 # Slug settings
-SLUG_ALPHABET = string.ascii_letters
+SLUG_ALPHABET = ascii_letters + digits
 DEFAULT_SLUG_LENGTH = 7
+
+# Hash settings
+HASH_ALPHABET = ascii_letters + digits
+DEFAULT_HASH_LENGTH = 10
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
