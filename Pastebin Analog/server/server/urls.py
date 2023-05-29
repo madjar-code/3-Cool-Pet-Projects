@@ -11,10 +11,16 @@ from .yasg import schema_view
 API_PREFIX = 'api/v1'
 
 urlpatterns = [
+    # Admin
     path('admin/', admin.site.urls),
-    path('api/users/', include('users.api.urls')),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    # Apps
+    path(f'{API_PREFIX}/text-blocks/', include('texts.api.urls')),
+    path(f'{API_PREFIX}/users/', include('users.api.urls')),
+
+    # Tokens
+    path(f'{API_PREFIX}/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path(f'{API_PREFIX}/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
 
 if settings.DEBUG:
