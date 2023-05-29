@@ -23,7 +23,7 @@ class TextBlock(BaseModel):
 
     class Meta:
         verbose_name = 'Text block'
-        verbose_name = 'Text blocls'
+        verbose_name_plural = 'Text blocks'
 
     def __str__(self) -> str:
         if self.author:
