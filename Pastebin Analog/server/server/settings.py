@@ -35,6 +35,7 @@ INSTALLED_APPS = [
 INSTALLED_APPS += [
     'common',
     'users',
+    'texts',
 ]
 
 REST_FRAMEWORK = {
