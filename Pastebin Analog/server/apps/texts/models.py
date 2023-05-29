@@ -14,7 +14,7 @@ def _create_hash() -> str:
 
 
 class TextBlock(BaseModel):
-    text = models.TextField(max_length=1048)
+    text = models.TextField(max_length=2096)
     author = models.ForeignKey(
         to=User, on_delete=models.SET_NULL, blank=True, null=True)
     hash = models.CharField(
