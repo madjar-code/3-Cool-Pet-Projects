@@ -39,7 +39,7 @@ class User(UUIDModel, AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ('email', 'first_name', 'last_name')
 
     def __str__(self) -> str:
-        return self.email
+        return self.username
 
     def tokens(self) -> Tokens:
         """Return tokens for user"""
