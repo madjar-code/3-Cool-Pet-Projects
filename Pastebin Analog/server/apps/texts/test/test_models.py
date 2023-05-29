@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.conf import settings
 from users.models import User
 from texts.models import TextBlock
 
@@ -28,3 +29,8 @@ class TestTextBlockModel(TestCase):
         block2_repr = str(self.text_block2)
         self.assertEqual(block1_repr, f"Text of {self.user.username}")
         self.assertEqual(block2_repr, "Text of unknown user")
+
+    def test_hash_creation(self):
+        self.assertIsInstance(self.text_block1.hash, str)
+        self.assertEqual(len(self.text_block1.hash),
+                         settings.DEFAULT_HASH_LENGTH)
