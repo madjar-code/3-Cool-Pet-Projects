@@ -25,3 +25,4 @@ class TextBlockSerializer(ModelSerializer):
             'hash',
             'text',
         )
+        read_only_fields = fields
