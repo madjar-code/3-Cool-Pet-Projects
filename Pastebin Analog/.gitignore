@@ -3,6 +3,7 @@
 __pycache__
 
 server/apps/users/migrations/*
+server/apps/texts/migrations/*
 
 *.sqlite3
 
