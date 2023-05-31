@@ -135,6 +135,7 @@ TIME_ZONE = 'Europe/Berlin'
 USE_I18N = True
 USE_TZ = True
 
+# Swagger UI and OpenAPI
 SWAGGER_SETTINGS = {
     'USE_SESSION_AUTH': False,
     'SECURITY_DEFINITIONS': {
@@ -145,6 +146,13 @@ SWAGGER_SETTINGS = {
         }
     }
 }
+
+API_TITLE = env.str('API_TITLE')
+API_VERSION = env.str('API_VERSION')
+API_DESCRIPTION = env.str('API_DESCRIPTION')
+API_TERMS_OF_SERVICE = env.str('API_TERMS_OF_SERVICE')
+API_CONTACT_EMAIL = env.str('API_CONTACT_EMAIL')
+API_LICENSE_NAME = env.str('API_LICENSE_NAME')
 
 # Media settings
 MEDIA_URL = '/media/'
