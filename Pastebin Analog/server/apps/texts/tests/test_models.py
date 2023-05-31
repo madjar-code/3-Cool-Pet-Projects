@@ -1,4 +1,8 @@
-from django.test import TestCase
+import time
+from datetime import timedelta
+from django.utils import timezone
+from django.test import override_settings
+from django.test.testcases import TestCase
 from django.conf import settings
 from users.models import User
 from texts.models import TextBlock
@@ -34,3 +38,14 @@ class TestTextBlockModel(TestCase):
         self.assertIsInstance(self.text_block1.hash, str)
         self.assertEqual(len(self.text_block1.hash),
                          settings.DEFAULT_HASH_LENGTH)
+
+    def test_text_block_exp_time(self):
+        now = timezone.now()
+        expiration_time = now + timedelta(seconds=1)
+
+        TextBlock.objects.create(
+            text='Test Text', expiration_time=expiration_time)
+        self.assertTrue(TextBlock.text_objects.all().exists())
+        time.sleep(1.2)
+
+        self.assertFalse(TextBlock.text_objects.all().exists())
