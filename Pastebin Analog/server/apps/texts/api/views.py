@@ -29,7 +29,7 @@ class TextBlockListView(ListAPIView):
     permission_classes = (AllowAny,)
     queryset = TextBlock.active_objects.all()
 
-    @swagger_auto_schema(operation_id='all_text_blocs')
+    @swagger_auto_schema(operation_id='all_text_blocks')
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
