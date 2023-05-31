@@ -25,7 +25,6 @@ class TestTextBlockViews(APITestCase):
         Get one text block by hash
         """
         hash: str = self.text_block1.hash
-        print(hash)
         response: Response = self.client.get(f'/api/v1/text-blocks/{hash}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -34,7 +33,7 @@ class TestTextBlockViews(APITestCase):
         Get one text block with wrong data
         """
         random_hash = '1' * 20
-        response: Response = self.client.get(f'/api/v1/text-blocks/{random_hash}')
+        response: Response = self.client.get(f'/api/v1/text-blocks/{random_hash}/')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_getting_text_block_to_user(self) -> None:
@@ -42,7 +41,7 @@ class TestTextBlockViews(APITestCase):
         Get text blocks to user by username
         """
         username: str = self.user.username
-        response: Response = self.client.get(f'/api/v1/text-blocks/user-{username}')
+        response: Response = self.client.get(f'/api/v1/text-blocks/user-{username}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_getting_text_block_to_user_wrong_data(self) -> None:
@@ -50,5 +49,5 @@ class TestTextBlockViews(APITestCase):
         Get text blocks to user with wrong username
         """
         random_username = '1' * 20
-        response: Response = self.client.get(f'/api/v1/text-blocks/user-{random_username}')
+        response: Response = self.client.get(f'/api/v1/text-blocks/user-{random_username}/')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
