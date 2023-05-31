@@ -8,6 +8,7 @@ class TextBlockAdmin(BaseAdmin):
         'short_text',
         'author',
         'hash',
+        'expiration_time',
         'is_active',
     )
     search_fields = (
