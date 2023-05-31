@@ -1,11 +1,13 @@
 from django.urls import path
 from .views import (
-    TextBlockDetailsView
+    TextBlockDetailsView,
+    TextBlockListView,
 )
 
 app_name = 'texts'
 
 
 urlpatterns = [
-    path('<str:hash>/', TextBlockDetailsView.as_view()),
+    path('', TextBlockListView.as_view(), name='text-block-list'),
+    path('<str:hash>/', TextBlockDetailsView.as_view(), name='text-block-detail'),
 ]
