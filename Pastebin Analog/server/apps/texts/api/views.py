@@ -9,6 +9,7 @@ from rest_framework.generics import (
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from drf_yasg.utils import swagger_auto_schema
 from users.models import User
 from texts.models import TextBlock
 from .serializers import (
@@ -28,6 +29,10 @@ class TextBlockListView(ListAPIView):
     permission_classes = (AllowAny,)
     queryset = TextBlock.active_objects.all()
 
+    @swagger_auto_schema(operation_id='all_text_blocs')
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
 
 class TextsForUser(ListAPIView):
     parser_classes = (JSONParser,)
@@ -35,6 +40,7 @@ class TextsForUser(ListAPIView):
     permission_classes = (AllowAny,)
     queryset = TextBlock.active_objects.all()
 
+    @swagger_auto_schema(operation_id='text_blocks_for_user')
     def get(self, request: Request, username: str) -> Response:
         """
         Get text blocks to user by username
@@ -55,7 +61,8 @@ class TextBlockDetailsView(RetrieveAPIView):
     queryset = TextBlock.active_objects.all()
     lookup_field = 'hash'
 
-    def retrieve(self, request: Request, hash: str) -> Response:
+    @swagger_auto_schema(operation_id='text_block_detail')
+    def get(self, request: Request, hash: str) -> Response:
         text_block: TextBlock = self.queryset.filter(hash=hash).first()
         if not text_block:
             return Response({'error': ErrorMessages.NO_TEXT_BLOCK.value},
