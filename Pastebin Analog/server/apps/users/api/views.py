@@ -9,7 +9,6 @@ from .serializers import *
 
 
 class RegisterAPIView(GenericAPIView):
-    """Register user"""
     parser_classes = (JSONParser,)
     serializer_class = RegisterSerializer
     permission_classes = (AllowAny,)
@@ -22,7 +21,6 @@ class RegisterAPIView(GenericAPIView):
 
 
 class LoginAPIView(GenericAPIView):
-    """Login user"""
     parser_classes = (JSONParser,)
     serializer_class = LoginSerializer
     permission_classes = (AllowAny,)
