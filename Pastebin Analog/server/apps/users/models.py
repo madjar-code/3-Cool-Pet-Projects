@@ -37,7 +37,6 @@ class User(UUIDModel, AbstractBaseUser, PermissionsMixin):
         return self.username
 
     def tokens(self) -> Tokens:
-        """Return tokens for user"""
         refresh: RefreshToken = RefreshToken.for_user(self)
         return Tokens(
             refresh=str(refresh),
