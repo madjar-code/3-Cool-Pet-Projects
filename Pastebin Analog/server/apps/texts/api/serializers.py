@@ -1,3 +1,7 @@
+from typing import (
+    Dict,
+    Optional,
+)
 from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.serializers import\
@@ -8,17 +12,30 @@ from texts.models import TextBlock
 
 
 class SimpleTextBlockSerializer(ModelSerializer):
+    expiration_time = serializers.SerializerMethodField(
+        required=False, allow_null=True)
     class Meta:
         model = TextBlock
         fields = (
             'id',
             'author',
+            'expiration_time',
             'hash',
         )
         read_only_fields = fields
 
+    def get_expiration_time(self, obj: TextBlock) -> Optional[str]:
+        expiration_time = obj.expiration_time
+        if expiration_time is not None:
+            formatted_datetime = expiration_time.\
+                strftime('%Y-%m-%d %H:%M:%S')
+            return formatted_datetime
+        return None
+
 
 class TextBlockSerializer(ModelSerializer):
+    expiration_time = serializers.SerializerMethodField(
+        required=False, allow_null=True)
     class Meta:
         model = TextBlock
         fields = (
@@ -30,12 +47,21 @@ class TextBlockSerializer(ModelSerializer):
         )
         read_only_fields = fields
 
+    def get_expiration_time(self, obj: TextBlock) -> Optional[str]:
+        expiration_time = obj.expiration_time
+        if expiration_time is not None:
+            formatted_datetime = expiration_time.\
+                strftime('%Y-%m-%d %H:%M:%S')
+            return formatted_datetime
+        return None
 
-class CreateTextBlockSerializer(serializers.ModelSerializer):
+
+class CUTextBlockSerializer(ModelSerializer):
     author = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), required=False, allow_null=True)
-    expiration_time = serializers.SerializerMethodField(required=False, allow_null=True)
     time_delta = serializers.IntegerField(required=False, allow_null=True)
+    expiration_time = serializers.SerializerMethodField(
+        required=False, allow_null=True)
 
     class Meta:
         model = TextBlock
@@ -55,15 +81,15 @@ class CreateTextBlockSerializer(serializers.ModelSerializer):
             'time_delta',
         )
 
-    def get_expiration_time(self, obj):
+    def get_expiration_time(self, obj: TextBlock) -> Optional[str]:
         expiration_time = obj.expiration_time
         if expiration_time is not None:
-            # Форматирование даты и времени в удобочитаемый формат
-            formatted_datetime = expiration_time.strftime('%Y-%m-%d %H:%M:%S')
+            formatted_datetime = expiration_time.\
+                strftime('%Y-%m-%d %H:%M:%S')
             return formatted_datetime
         return None
 
-    def create(self, validated_data):
+    def _update_expiration_time(self, validated_data):
         time_delta = validated_data.pop('time_delta', None)
 
         if time_delta is not None:
@@ -71,4 +97,10 @@ class CreateTextBlockSerializer(serializers.ModelSerializer):
             expiration_time = now + timezone.timedelta(minutes=time_delta)
             validated_data['expiration_time'] = expiration_time
 
+    def update(self, instance, validated_data):
+        self._update_expiration_time(validated_data)
+        return super().update(instance, validated_data)
+
+    def create(self, validated_data):
+        self._update_expiration_time(validated_data)
         return super().create(validated_data)
