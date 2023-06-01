@@ -45,9 +45,6 @@ class TextsForUser(ListAPIView):
 
     @swagger_auto_schema(operation_id='text_blocks_for_user')
     def get(self, request: Request, username: str) -> Response:
-        """
-        Get text blocks to user by username
-        """
         user: User = User.objects.filter(username=username).first()
         if not user:
             return Response({'error': ErrorMessages.NO_USER.value},

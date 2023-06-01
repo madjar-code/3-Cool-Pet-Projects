@@ -11,6 +11,7 @@ from users.models import User
 from texts.models import TextBlock
 
 
+
 class SimpleTextBlockSerializer(ModelSerializer):
     expiration_time = serializers.SerializerMethodField(
         required=False, allow_null=True)
@@ -89,7 +90,7 @@ class CUTextBlockSerializer(ModelSerializer):
             return formatted_datetime
         return None
 
-    def _update_expiration_time(self, validated_data):
+    def _update_expiration_time(self, validated_data: Dict) -> None:
         time_delta = validated_data.pop('time_delta', None)
 
         if time_delta is not None:
@@ -97,10 +98,10 @@ class CUTextBlockSerializer(ModelSerializer):
             expiration_time = now + timezone.timedelta(minutes=time_delta)
             validated_data['expiration_time'] = expiration_time
 
-    def update(self, instance, validated_data):
+    def update(self, instance: TextBlock, validated_data: Dict) -> TextBlock:
         self._update_expiration_time(validated_data)
         return super().update(instance, validated_data)
 
-    def create(self, validated_data):
+    def create(self, validated_data: Dict) -> TextBlock:
         self._update_expiration_time(validated_data)
         return super().create(validated_data)
