@@ -31,6 +31,7 @@ class TextBlock(BaseModel):
     expiration_time = models.DateTimeField(
         null=True, blank=True, db_index=True)
 
+    objects = SoftDeletionManager()
     text_objects = TextBlockManager()
 
     class Meta:
