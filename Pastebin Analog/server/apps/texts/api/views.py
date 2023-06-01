@@ -5,6 +5,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework.generics import (
     ListAPIView,
     RetrieveAPIView,
+    CreateAPIView,
 )
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -15,6 +16,7 @@ from texts.models import TextBlock
 from .serializers import (
     SimpleTextBlockSerializer,
     TextBlockSerializer,
+    CreateTextBlockSerializer,
 )
 
 
@@ -51,6 +53,20 @@ class TextsForUser(ListAPIView):
                             status=status.HTTP_404_NOT_FOUND)
         text_blocks: QuerySet[TextBlock] = self.queryset.filter(author=user)
         serializer = self.serializer_class(text_blocks, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CreateTextBlockView(CreateAPIView):
+    parser_classes = (JSONParser,)
+    serializer_class = CreateTextBlockSerializer
+    permission_classes = (AllowAny,)
+
+    @swagger_auto_schema(operation_id='create_text_block')
+    def post(self, request: Request) -> Response:
+        serializer = self.serializer_class(
+            data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
