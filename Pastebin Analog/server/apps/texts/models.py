@@ -8,13 +8,6 @@ from common.mixins.managers import SoftDeletionManager
 from users.models import User
 
 
-def _create_hash() -> str:
-    letters: str = settings.HASH_ALPHABET
-    length: int = settings.DEFAULT_HASH_LENGTH
-    random_hash: str = ''.join(secrets.choice(letters) for _ in range(length))
-    return random_hash
-
-
 class TextBlockManager(SoftDeletionManager):
     def get_queryset(self):
         return super().get_queryset().filter(
@@ -28,8 +21,7 @@ class TextBlock(BaseModel):
         to=User, on_delete=models.SET_NULL,
         blank=True, null=True, related_name='text_blocks')
     hash = models.CharField(
-        max_length=settings.DEFAULT_HASH_LENGTH,
-        default=_create_hash, unique=True)
+        max_length=255, blank=True, null=True)
     expiration_time = models.DateTimeField(
         null=True, blank=True, db_index=True)
 
@@ -42,3 +34,10 @@ class TextBlock(BaseModel):
 
     def __str__(self) -> str:
         return f'Text of {self.author or "unknown user"}'
+
+    def save(self, *args, **kwargs):
+        if not self.hash:
+            from texts.services.hash import HashGenerator
+            hash_generator = HashGenerator()
+            self.hash = hash_generator.create_unique_hash()
+        super().save(*args, **kwargs)
