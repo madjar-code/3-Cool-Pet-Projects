@@ -131,7 +131,7 @@ SIMPLE_JWT = {
 
 LANGUAGE_CODE = 'en'
 
-TIME_ZONE = 'Europe/Berlin'
+TIME_ZONE = 'Europe/Chisinau'
 USE_I18N = True
 USE_TZ = True
 
