@@ -1,5 +1,6 @@
 import secrets
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.conf import settings
 from common.mixins.models import BaseModel
@@ -16,8 +17,9 @@ def _create_hash() -> str:
 
 class TextBlockManager(SoftDeletionManager):
     def get_queryset(self):
-        return super().get_queryset().\
-            filter(expiration_time__gt=timezone.now())
+        return super().get_queryset().filter(
+            Q(expiration_time__gt=timezone.now()) |
+            Q(expiration_time__isnull=True))
 
 
 class TextBlock(BaseModel):
