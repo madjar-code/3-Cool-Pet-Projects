@@ -17,7 +17,7 @@ from texts.models import TextBlock
 from .serializers import (
     SimpleTextBlockSerializer,
     TextBlockSerializer,
-    CreateTextBlockSerializer,
+    CUTextBlockSerializer,
 )
 
 
@@ -30,7 +30,7 @@ class TextBlockListView(ListAPIView):
     parser_classes = (JSONParser,)
     serializer_class = SimpleTextBlockSerializer
     permission_classes = (AllowAny,)
-    queryset = TextBlock.active_objects.all()
+    queryset = TextBlock.text_objects.all()
 
     @swagger_auto_schema(operation_id='all_text_blocks')
     def get(self, request, *args, **kwargs):
@@ -41,7 +41,7 @@ class TextsForUser(ListAPIView):
     parser_classes = (JSONParser,)
     serializer_class = SimpleTextBlockSerializer
     permission_classes = (AllowAny,)
-    queryset = TextBlock.active_objects.all()
+    queryset = TextBlock.text_objects.all()
 
     @swagger_auto_schema(operation_id='text_blocks_for_user')
     def get(self, request: Request, username: str) -> Response:
@@ -59,7 +59,7 @@ class TextsForUser(ListAPIView):
 
 class CreateTextBlockView(CreateAPIView):
     parser_classes = (JSONParser,)
-    serializer_class = CreateTextBlockSerializer
+    serializer_class = CUTextBlockSerializer
     permission_classes = (AllowAny,)
 
     @swagger_auto_schema(operation_id='create_text_block')
@@ -73,7 +73,7 @@ class CreateTextBlockView(CreateAPIView):
 
 class UpdateTextBlockView(UpdateAPIView):
     parser_classes = (JSONParser,)
-    serializer_class = CreateTextBlockSerializer
+    serializer_class = CUTextBlockSerializer
     queryset = TextBlock.objects.all()
     permission_classes = (AllowAny,)
 
@@ -94,7 +94,7 @@ class TextBlockDetailsView(RetrieveAPIView):
     parser_classes = (JSONParser,)
     serializer_class = TextBlockSerializer
     permission_classes = (AllowAny,)
-    queryset = TextBlock.active_objects.all()
+    queryset = TextBlock.text_objects.all()
     lookup_field = 'hash'
 
     @swagger_auto_schema(operation_id='text_block_detail')
