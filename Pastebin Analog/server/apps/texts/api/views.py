@@ -5,7 +5,6 @@ from rest_framework.parsers import JSONParser
 from rest_framework.generics import (
     ListAPIView,
     RetrieveAPIView,
-    UpdateAPIView,
     CreateAPIView,
 )
 from rest_framework.request import Request
@@ -66,25 +65,6 @@ class CreateTextBlockView(CreateAPIView):
     def post(self, request: Request) -> Response:
         serializer = self.serializer_class(
             data=request.data, context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class UpdateTextBlockView(UpdateAPIView):
-    parser_classes = (JSONParser,)
-    serializer_class = CreateTextBlockSerializer
-    queryset = TextBlock.objects.all()
-    permission_classes = (AllowAny,)
-
-    @swagger_auto_schema(operation_id='update_text_block')
-    def put(self, request: Request, hash: str) -> Response:
-        text_block: TextBlock = self.queryset.filter(hash=hash).first()
-        if not text_block:
-            return Response({'error': ErrorMessages.NO_TEXT_BLOCK.value},
-                            status=status.HTTP_404_NOT_FOUND)
-        serializer = self.serializer_class(
-            text_block, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
