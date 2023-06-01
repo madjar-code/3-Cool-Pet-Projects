@@ -1,7 +1,6 @@
 import secrets
 from django.db import models
 from django.utils import timezone
-from django.db.models import QuerySet
 from django.conf import settings
 from common.mixins.models import BaseModel
 from common.mixins.managers import SoftDeletionManager
