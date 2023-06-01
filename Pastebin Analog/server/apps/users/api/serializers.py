@@ -2,6 +2,7 @@ from enum import Enum
 from typing import Dict, Any
 from django.contrib import auth
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 from rest_framework.serializers import (
     ModelSerializer,
     ValidationError,
@@ -20,6 +21,9 @@ class Messages(str, Enum):
 
 class RegisterSerializer(ModelSerializer):
     email = serializers.EmailField(required=True)
+    username = serializers.CharField(required=True,
+        min_length=1, max_length=255,
+        validators=[UniqueValidator(queryset=User.objects.all())])
     password = serializers.CharField(
         min_length=5, max_length=68, write_only=True)
     confirm_password = serializers.CharField(
@@ -29,6 +33,7 @@ class RegisterSerializer(ModelSerializer):
         model = User
         fields = (
             'email',
+            'username',
             'password',
             'confirm_password',
         )
