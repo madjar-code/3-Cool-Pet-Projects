@@ -1,5 +1,6 @@
 from enum import Enum
 from django.db.models import QuerySet
+from django.contrib.auth.models import AnonymousUser
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.generics import (
@@ -64,7 +65,10 @@ class CreateTextBlockView(CreateAPIView):
         serializer = self.serializer_class(
             data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        current_user: User | AnonymousUser = request.user
+        if isinstance(current_user, AnonymousUser):
+            current_user = None
+        serializer.save(author=current_user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

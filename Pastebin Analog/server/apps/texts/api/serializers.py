@@ -58,8 +58,6 @@ class TextBlockSerializer(ModelSerializer):
 
 
 class CUTextBlockSerializer(ModelSerializer):
-    author = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), required=False, allow_null=True)
     time_delta = serializers.IntegerField(required=False, allow_null=True)
     expiration_time = serializers.SerializerMethodField(
         required=False, allow_null=True)
@@ -77,6 +75,7 @@ class CUTextBlockSerializer(ModelSerializer):
         read_only_fields = (
             'id',
             'hash',
+            'author',
         )
         write_only_fields = (
             'time_delta',
