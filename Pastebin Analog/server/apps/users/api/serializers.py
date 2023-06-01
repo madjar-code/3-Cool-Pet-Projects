@@ -12,18 +12,14 @@ from users.models import User
 
 
 class Messages(str, Enum):
-    EMAIL_TAKEN = 'Эта почта уже занята'
-    PASSWORD_MISMATCH = 'Введенные пароли не совпадают'
-    INVALID_LOGIN = 'Некорректная почта или пароль'
-    ACCOUNT_DISABLED = 'Аккаунт отключен, обратитесь к админу'
+    EMAIL_TAKEN = 'This email is already taken'
+    PASSWORD_MISMATCH = 'The entered passwords do not match'
+    INVALID_LOGIN = 'Incorrect email or password'
+    ACCOUNT_DISABLED = 'Account disabled, contact admin'
 
 
 class RegisterSerializer(ModelSerializer):
     email = serializers.EmailField(required=True)
-    first_name = serializers.CharField(
-        min_length=1, max_length=68, required=False)
-    last_name = serializers.CharField(
-        min_length=1, max_length=68, required=False)
     password = serializers.CharField(
         min_length=5, max_length=68, write_only=True)
     confirm_password = serializers.CharField(
@@ -33,8 +29,6 @@ class RegisterSerializer(ModelSerializer):
         model = User
         fields = (
             'email',
-            'first_name',
-            'last_name',
             'password',
             'confirm_password',
         )
@@ -84,10 +78,6 @@ class LoginSerializer(ModelSerializer):
         )
 
     def validate(self, attrs: Dict[str, Any]) -> Dict[str, str]:
-        """
-        During validation, authentication occurs
-        on the backend
-        """
         email: str = attrs.get('email', '')
         password: str = attrs.get('password', '')
 

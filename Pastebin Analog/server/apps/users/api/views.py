@@ -1,8 +1,8 @@
 from rest_framework import status
 from rest_framework.generics import\
     GenericAPIView
-from rest_framework.parsers import\
-    MultiPartParser, FormParser, JSONParser
+from rest_framework.permissions import AllowAny
+from rest_framework.parsers import JSONParser
 from rest_framework.request import Request
 from rest_framework.response import Response
 from .serializers import *
@@ -10,9 +10,10 @@ from .serializers import *
 
 class RegisterAPIView(GenericAPIView):
     """Register user"""
-    parser_classes = (MultiPartParser, FormParser, JSONParser)
+    parser_classes = (JSONParser,)
     serializer_class = RegisterSerializer
-    
+    permission_classes = (AllowAny,)
+
     def post(self, request: Request) -> Response:
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -24,6 +25,7 @@ class LoginAPIView(GenericAPIView):
     """Login user"""
     parser_classes = (JSONParser,)
     serializer_class = LoginSerializer
+    permission_classes = (AllowAny,)
     
     def post(self, request: Request) -> Response:
         serializer = self.serializer_class(data=request.data)

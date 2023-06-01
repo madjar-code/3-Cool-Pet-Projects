@@ -21,13 +21,8 @@ class User(UUIDModel, AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(
         max_length=255, unique=True, db_index=True)
-    first_name = models.CharField(max_length=255, blank=True, null=True)
-    last_name = models.CharField(max_length=255, blank=True, null=True)
-    avatar = models.ImageField(
-        upload_to='avatars', default='avatars/default.png'
-    )
+
     is_staff = models.BooleanField(default=False)
-    is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -35,8 +30,8 @@ class User(UUIDModel, AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ('email', 'first_name', 'last_name')
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ('username',)
 
     def __str__(self) -> str:
         return self.username

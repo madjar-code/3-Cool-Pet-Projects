@@ -10,8 +10,7 @@ class ErrorMessages(str, Enum):
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, username: str, email: str, password: str,
-                    first_name: str = None, last_name: str = None) -> User:
+    def create_user(self, username: str, email: str, password: str) -> User:
         if not username:
             raise ValueError(ErrorMessages.NO_USERNAME.value)
         if not email:
@@ -20,20 +19,17 @@ class UserManager(BaseUserManager):
             raise ValueError(ErrorMessages.NO_PASSWORD.value)
 
         email: str = self.normalize_email(email)
-        user: User = self.model(username=username, email=email,
-                                first_name=first_name, last_name=last_name)
+        user: User = self.model(username=username, email=email)
         user.set_password(password)
         user.save()
         return user
 
-    def create_superuser(self, username: str, email: str, password: str,
-                         first_name: str = None, last_name: str = None) -> User:
+    def create_superuser(self, username: str, email: str, password: str) -> User:
         user: User = self.create_user(
             username=username, email=self.normalize_email(email),
-            first_name=first_name, last_name=last_name,password=password)
+            password=password)
         user.is_staff = True
         user.is_superuser = True
-        user.is_verified = True
         user.save()
 
         return user

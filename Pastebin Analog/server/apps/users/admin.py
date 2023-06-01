@@ -23,45 +23,25 @@ class UserAdmin(UserAdmin,
     list_display = (
         'username',
         'email',
-        'first_name',
-        'last_name',
-        'is_verified',
         'is_staff',
         'is_active',
     )
     search_fields = (
         'username',
         'email',
-        'first_name',
-        'last_name',
     )
     list_filter = (
         'created_at',
         'is_active',
-        'is_verified',
         'is_staff',
     )
     ordering = ('-created_at',)
-    fieldsets = (
-        (None, {'fields': ('email',
-                           'username',
-                           'avatar')}),
-        ('Personal informations', {
-            'fields': ('first_name',
-                       'last_name',)
-        }),
-        ('Permissions', {
-            'fields': ('is_verified',
-                       'is_staff')
-        }),
-    )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
             'fields': ('email',
                        'password1',
                        'password2',
-                       'description',
                        'is_active',
                        'is_staff')}
          ),
@@ -69,8 +49,6 @@ class UserAdmin(UserAdmin,
     actions = (
         'activate',
         'desactivate',
-        'verify',
-        'unverify'
     )
     
     def activate(modeladmin, request: HttpRequest, queryset: QuerySet) -> None:
@@ -80,11 +58,3 @@ class UserAdmin(UserAdmin,
     def desactivate(modeladmin, request: HttpRequest, queryset: QuerySet) -> None:
         queryset.update(is_active=False)
         messages.success(request, Messages.DESACTIVATE_USER.value)
-
-    def verify(modeladmin, request: HttpRequest, queryset: QuerySet) -> None:
-        queryset.update(is_verified=True)
-        messages.success(request, Messages.VERIFY_USER.value)
-
-    def unverify(modeladmin, request: HttpRequest, queryset: QuerySet) -> None:
-        queryset.update(is_verified=False)
-        messages.success(request, Messages.UNVERIFY_USER.value)
