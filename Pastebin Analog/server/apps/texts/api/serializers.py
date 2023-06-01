@@ -51,6 +51,9 @@ class CreateTextBlockSerializer(serializers.ModelSerializer):
             'id',
             'hash',
         )
+        write_only_fields = (
+            'time_delta',
+        )
 
     def get_expiration_time(self, obj):
         expiration_time = obj.expiration_time
