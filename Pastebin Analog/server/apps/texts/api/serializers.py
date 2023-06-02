@@ -7,7 +7,6 @@ from rest_framework import serializers
 from rest_framework.serializers import\
     ModelSerializer
 
-from users.models import User
 from texts.models import TextBlock
 
 
@@ -20,6 +19,7 @@ class SimpleTextBlockSerializer(ModelSerializer):
         fields = (
             'id',
             'author',
+            'view_count',
             'expiration_time',
             'hash',
         )
@@ -44,6 +44,7 @@ class TextBlockSerializer(ModelSerializer):
             'author',
             'hash',
             'text',
+            'view_count',
             'expiration_time',
         )
         read_only_fields = fields
@@ -69,6 +70,7 @@ class CUTextBlockSerializer(ModelSerializer):
             'author',
             'hash',
             'text',
+            'view_count',
             'expiration_time',
             'time_delta',
         )
@@ -76,6 +78,7 @@ class CUTextBlockSerializer(ModelSerializer):
             'id',
             'hash',
             'author',
+            'view_count',
         )
         write_only_fields = (
             'time_delta',
