@@ -1,8 +1,6 @@
-import secrets
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Manager
 from django.utils import timezone
-from django.conf import settings
 from common.mixins.models import BaseModel
 from common.mixins.managers import SoftDeletionManager
 from users.models import User
@@ -26,7 +24,8 @@ class TextBlock(BaseModel):
         null=True, blank=True, db_index=True)
     view_count = models.IntegerField(default=0)
 
-    objects = SoftDeletionManager()
+    objects = Manager()
+    active_objects = SoftDeletionManager()
     text_objects = TextBlockManager()
 
     class Meta:
