@@ -1,9 +1,8 @@
-import concurrent.futures
 from enum import Enum
 from typing import List
 from concurrent.futures import ThreadPoolExecutor
 from django.core.cache import cache
-from django.db.models import QuerySet
+from django.db.models import F, QuerySet
 from django.contrib.auth.models import AnonymousUser
 from rest_framework import status
 from rest_framework.parsers import JSONParser
@@ -134,5 +133,8 @@ class TextBlockDetailsView(RetrieveAPIView):
         if not text_block:
             return Response({'error': ErrorMessages.NO_TEXT_BLOCK.value},
                             status=status.HTTP_404_NOT_FOUND)
-        serializer: TextBlockSerializer = self.serializer_class(text_block)
+        text_block.view_count = F('view_count') + 1
+        text_block.save()
+        text_block.refresh_from_db()
+        serializer: TextBlockSerializer = self.serializer_class(text_block)    
         return Response(data=serializer.data, status=status.HTTP_200_OK)
