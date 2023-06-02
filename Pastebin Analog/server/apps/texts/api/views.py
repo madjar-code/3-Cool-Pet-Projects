@@ -48,6 +48,24 @@ class TextBlockListView(ListAPIView):
         return super().get(request, *args, **kwargs)
 
 
+class TopTextBlocksView(ListAPIView):
+    parser_classes = (JSONParser,)
+    serializer_class = SimpleTextBlockSerializer
+    permission_classes = (AllowAny,)
+
+    def get_queryset(self):
+        queryset = TextBlock.text_objects.order_by('-view_count')
+        if queryset.count() < 10:
+            queryset = queryset[:10]
+        return queryset
+
+    @swagger_auto_schema(operation_id='top_text_blocks')
+    def get(self, request: Request) -> Response:
+        queryset = self.get_queryset()
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
 class TextsForUser(ListAPIView):
     parser_classes = (JSONParser,)
     serializer_class = SimpleTextBlockSerializer
