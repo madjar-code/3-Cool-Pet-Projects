@@ -24,6 +24,7 @@ class TextBlock(BaseModel):
         max_length=255, blank=True, null=True)
     expiration_time = models.DateTimeField(
         null=True, blank=True, db_index=True)
+    view_count = models.IntegerField(default=0)
 
     objects = SoftDeletionManager()
     text_objects = TextBlockManager()
