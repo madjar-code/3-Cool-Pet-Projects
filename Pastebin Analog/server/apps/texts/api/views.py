@@ -1,4 +1,8 @@
+import concurrent.futures
 from enum import Enum
+from typing import List
+from concurrent.futures import ThreadPoolExecutor
+from django.core.cache import cache
 from django.db.models import QuerySet
 from django.contrib.auth.models import AnonymousUser
 from rest_framework import status
@@ -15,11 +19,18 @@ from rest_framework.permissions import AllowAny
 from drf_yasg.utils import swagger_auto_schema
 from users.models import User
 from texts.models import TextBlock
+from texts.services.hash import HashGenerator
 from .serializers import (
     SimpleTextBlockSerializer,
     TextBlockSerializer,
     CUTextBlockSerializer,
 )
+
+CACHE_KEY = 'hash_generator_cache_key'
+
+
+hash_generator = HashGenerator()
+hash_generator.generate_hashes(20)
 
 
 class ErrorMessages(str, Enum):
@@ -55,6 +66,14 @@ class TextsForUser(ListAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+def generate_hashes(num_hashes: int) -> None:
+    hashes: List[str] = cache.get(CACHE_KEY, [])
+    if len(hashes) < num_hashes:
+        new_hashes = hash_generator.generate_hashes(num_hashes)
+        hashes.extend(new_hashes)
+        cache.set(CACHE_KEY, hashes)
+
+
 class CreateTextBlockView(CreateAPIView):
     parser_classes = (JSONParser,)
     serializer_class = CUTextBlockSerializer
@@ -65,10 +84,21 @@ class CreateTextBlockView(CreateAPIView):
         serializer = self.serializer_class(
             data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
+
+        hashes: List[str] = cache.get(CACHE_KEY, [])
+
+        if len(hashes) > 0:
+            hash_value: str = hashes.pop()
+            cache.set(CACHE_KEY, hashes)
+        else:
+            with ThreadPoolExecutor() as executor:
+                executor.submit(generate_hashes, 20)
+            hash_value: str = hash_generator.create_unique_hash()
+
         current_user: User | AnonymousUser = request.user
         if isinstance(current_user, AnonymousUser):
             current_user = None
-        serializer.save(author=current_user)
+        serializer.save(author=current_user, hash=hash_value)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
