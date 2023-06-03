@@ -14,10 +14,15 @@ from rest_framework.generics import (
     UpdateAPIView,
     CreateAPIView,
 )
+from rest_framework.throttling import (
+    AnonRateThrottle,
+    UserRateThrottle,
+)
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from drf_yasg.utils import swagger_auto_schema
+# from common.throttle import CustomThrottle
 from users.models import User
 from texts.models import TextBlock
 from texts.services.hash import HashGenerator
@@ -57,7 +62,7 @@ class TopTextBlocksView(ListAPIView):
         queryset = cache.get('top_text_blocks_queryset')
         if queryset is None:                
             queryset = TextBlock.text_objects.order_by('-view_count')
-            if queryset.count() < 10:
+            if queryset.count() > 10:
                 queryset = queryset[:10]
             cache.set('top_text_blocks_queryset', queryset, timeout=1000)
         return queryset
@@ -94,10 +99,16 @@ def generate_hashes(num_hashes: int) -> None:
         cache.set('hash_generator_cache_key', hashes)
 
 
+class CustomThrottle(AnonRateThrottle,
+                     UserRateThrottle):
+    rate = '1/s'
+
+
 class CreateTextBlockView(CreateAPIView):
     parser_classes = (JSONParser,)
     serializer_class = CUTextBlockSerializer
     permission_classes = (AllowAny,)
+    throttle_classes = (CustomThrottle,)
 
     @swagger_auto_schema(operation_id='create_text_block')
     def post(self, request: Request) -> Response:
