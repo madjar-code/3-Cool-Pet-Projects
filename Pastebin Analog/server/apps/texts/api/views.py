@@ -34,7 +34,6 @@ from .serializers import (
 
 
 hash_generator = HashGenerator()
-hash_generator.generate_hashes(20)
 
 
 class ErrorMessages(str, Enum):
@@ -94,7 +93,11 @@ class TextsForUser(ListAPIView):
 def generate_hashes(num_hashes: int) -> None:
     hashes: List[str] = cache.get('hash_generator_cache_key', [])
     if len(hashes) < num_hashes:
-        new_hashes = hash_generator.generate_hashes(num_hashes)
+        new_hashes: List[str] = []
+        for _ in range(num_hashes):
+            hash_value: str =\
+                hash_generator.create_unique_hash()
+            new_hashes.append(hash_value)
         hashes.extend(new_hashes)
         cache.set('hash_generator_cache_key', hashes)
 
