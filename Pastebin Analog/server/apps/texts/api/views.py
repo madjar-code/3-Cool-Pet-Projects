@@ -5,7 +5,9 @@ from django.core.cache import cache
 from django.db.models import F, QuerySet
 from django.contrib.auth.models import AnonymousUser
 from rest_framework import status
-from rest_framework.parsers import JSONParser
+from rest_framework.parsers import (
+    JSONParser,
+)
 from rest_framework.generics import (
     ListAPIView,
     RetrieveAPIView,
@@ -24,8 +26,6 @@ from .serializers import (
     TextBlockSerializer,
     CUTextBlockSerializer,
 )
-
-CACHE_KEY = 'hash_generator_cache_key'
 
 
 hash_generator = HashGenerator()
@@ -87,11 +87,11 @@ class TextsForUser(ListAPIView):
 
 
 def generate_hashes(num_hashes: int) -> None:
-    hashes: List[str] = cache.get(CACHE_KEY, [])
+    hashes: List[str] = cache.get('hash_generator_cache_key', [])
     if len(hashes) < num_hashes:
         new_hashes = hash_generator.generate_hashes(num_hashes)
         hashes.extend(new_hashes)
-        cache.set(CACHE_KEY, hashes)
+        cache.set('hash_generator_cache_key', hashes)
 
 
 class CreateTextBlockView(CreateAPIView):
@@ -105,11 +105,11 @@ class CreateTextBlockView(CreateAPIView):
             data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
 
-        hashes: List[str] = cache.get(CACHE_KEY, [])
+        hashes: List[str] = cache.get('hash_generator_cache_key', [])
 
         if len(hashes) > 0:
             hash_value: str = hashes.pop()
-            cache.set(CACHE_KEY, hashes)
+            cache.set('hash_generator_cache_key', hashes)
         else:
             with ThreadPoolExecutor() as executor:
                 executor.submit(generate_hashes, 20)
