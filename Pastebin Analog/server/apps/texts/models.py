@@ -37,7 +37,7 @@ class TextBlock(BaseModel):
 
     def save(self, *args, **kwargs):
         if not self.hash:
-            from texts.services.hash import HashGeneratorRandom
-            hash_generator = HashGeneratorRandom()
+            from texts.services.hash import hash_factory
+            hash_generator = hash_factory('sha')
             self.hash = hash_generator.create_unique_hash()
         super().save(*args, **kwargs)

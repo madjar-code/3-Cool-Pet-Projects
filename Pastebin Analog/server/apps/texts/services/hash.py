@@ -31,6 +31,13 @@ class BaseHashGenerator(abc.ABC):
         return random_hash
 
 
+def hash_factory(type: str = 'random') -> BaseHashGenerator:
+    if type == 'sha':
+        return HashGeneratorSHA()
+    else:
+        return HashGeneratorRandom()
+
+
 class HashGeneratorRandom(BaseHashGenerator):
     def _create_hash(self) -> str:
         random_hash: str = ''.join(secrets.choice(HASH_ALPHABET)
