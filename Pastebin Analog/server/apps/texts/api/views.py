@@ -53,10 +53,13 @@ class TopTextBlocksView(ListAPIView):
     serializer_class = SimpleTextBlockSerializer
     permission_classes = (AllowAny,)
 
-    def get_queryset(self):
-        queryset = TextBlock.text_objects.order_by('-view_count')
-        if queryset.count() < 10:
-            queryset = queryset[:10]
+    def get_queryset(self) -> QuerySet[TextBlock]:
+        queryset = cache.get('top_text_blocks_queryset')
+        if queryset is None:                
+            queryset = TextBlock.text_objects.order_by('-view_count')
+            if queryset.count() < 10:
+                queryset = queryset[:10]
+            cache.set('top_text_blocks_queryset', queryset, timeout=1000)
         return queryset
 
     @swagger_auto_schema(operation_id='top_text_blocks')
