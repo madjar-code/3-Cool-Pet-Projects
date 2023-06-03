@@ -25,7 +25,7 @@ from drf_yasg.utils import swagger_auto_schema
 # from common.throttle import CustomThrottle
 from users.models import User
 from texts.models import TextBlock
-from texts.services.hash import HashGenerator
+from texts.services.hash import HashGeneratorRandom
 from .serializers import (
     SimpleTextBlockSerializer,
     TextBlockSerializer,
@@ -33,7 +33,7 @@ from .serializers import (
 )
 
 
-hash_generator = HashGenerator()
+hash_generator = HashGeneratorRandom()
 
 
 class ErrorMessages(str, Enum):

@@ -13,7 +13,7 @@ class MaxAttemptsError(Exception):
     pass
 
 
-class HashGenerator:
+class HashGeneratorRandom:
     def _create_hash(self) -> str:
         random_hash: str = ''.join(secrets.choice(HASH_ALPHABET)
                               for _ in range(DEFAULT_HASH_LENGTH))
