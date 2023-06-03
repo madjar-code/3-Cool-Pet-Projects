@@ -50,9 +50,9 @@ class HashGeneratorRandom(BaseHashGenerator):
 
 class HashGeneratorSHA(BaseHashGenerator):
     def _create_hash(self) -> str:
-        random_bytes: bytes = secrets.token_bytes(DEFAULT_HASH_LENGTH)
+        random_bytes: bytes = secrets.token_bytes()
         hash_value: str = hashlib.sha256(random_bytes).hexdigest()
-        return hash_value
+        return hash_value[:DEFAULT_HASH_LENGTH]
 
     def create_unique_hash(self, attempt_number: int = 0) -> str:
         return super().create_unique_hash(attempt_number)
