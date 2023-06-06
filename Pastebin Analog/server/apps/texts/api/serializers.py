@@ -18,6 +18,7 @@ class SimpleTextBlockSerializer(ModelSerializer):
         model = TextBlock
         fields = (
             'id',
+            'title',
             'author',
             'view_count',
             'expiration_time',
@@ -33,6 +34,7 @@ class TextBlockSerializer(ModelSerializer):
         model = TextBlock
         fields = (
             'id',
+            'title',
             'author',
             'hash',
             'text',
@@ -52,6 +54,7 @@ class CUTextBlockSerializer(ModelSerializer):
         model = TextBlock
         fields = (
             'id',
+            'title',
             'author',
             'hash',
             'text',
@@ -65,6 +68,9 @@ class CUTextBlockSerializer(ModelSerializer):
             'author',
             'expiration_time',
             'view_count',
+        )
+        write_only_fields = (
+            'time_delta',
         )
 
     def _update_expiration_time(self, validated_data: Dict) -> None:
