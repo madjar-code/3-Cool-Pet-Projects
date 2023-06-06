@@ -12,8 +12,8 @@ from texts.models import TextBlock
 
 
 class SimpleTextBlockSerializer(ModelSerializer):
-    expiration_time = serializers.SerializerMethodField(
-        required=False, allow_null=True)
+    expiration_time = serializers.DateTimeField(
+        required=False, allow_null=True, format='%Y-%m-%d %H:%M:%S')
     class Meta:
         model = TextBlock
         fields = (
@@ -25,18 +25,10 @@ class SimpleTextBlockSerializer(ModelSerializer):
         )
         read_only_fields = fields
 
-    def get_expiration_time(self, obj: TextBlock) -> Optional[str]:
-        expiration_time = obj.expiration_time
-        if expiration_time is not None:
-            formatted_datetime = expiration_time.\
-                strftime('%Y-%m-%d %H:%M:%S')
-            return formatted_datetime
-        return None
-
 
 class TextBlockSerializer(ModelSerializer):
-    expiration_time = serializers.SerializerMethodField(
-        required=False, allow_null=True)
+    expiration_time = serializers.DateTimeField(
+        required=False, allow_null=True, format='%Y-%m-%d %H:%M:%S')
     class Meta:
         model = TextBlock
         fields = (
@@ -49,19 +41,12 @@ class TextBlockSerializer(ModelSerializer):
         )
         read_only_fields = fields
 
-    def get_expiration_time(self, obj: TextBlock) -> Optional[str]:
-        expiration_time = obj.expiration_time
-        if expiration_time is not None:
-            formatted_datetime = expiration_time.\
-                strftime('%Y-%m-%d %H:%M:%S')
-            return formatted_datetime
-        return None
-
 
 class CUTextBlockSerializer(ModelSerializer):
     time_delta = serializers.IntegerField(required=False, allow_null=True)
-    expiration_time = serializers.SerializerMethodField(
-        required=False, allow_null=True)
+    expiration_time = serializers.DateTimeField(
+        required=False, allow_null=True,
+        read_only=True, format='%Y-%m-%d %H:%M:%S')
 
     class Meta:
         model = TextBlock
@@ -78,19 +63,9 @@ class CUTextBlockSerializer(ModelSerializer):
             'id',
             'hash',
             'author',
+            'expiration_time',
             'view_count',
         )
-        write_only_fields = (
-            'time_delta',
-        )
-
-    def get_expiration_time(self, obj: TextBlock) -> Optional[str]:
-        expiration_time = obj.expiration_time
-        if expiration_time is not None:
-            formatted_datetime = expiration_time.\
-                strftime('%Y-%m-%d %H:%M:%S')
-            return formatted_datetime
-        return None
 
     def _update_expiration_time(self, validated_data: Dict) -> None:
         time_delta = validated_data.pop('time_delta', None)
