@@ -1,8 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;300;400;500;600;700;800&display=swap');
 
 :root {
-  --front-color: #FFF;
-  --button-color: #444444;
+  --bgc-color: #1F1F1F;
+  --warning-red: #E50000;
+  --front-color: #292929;
+  --dark-grey: #444444;
+  --text-color: #E5E5E5;
+  --simple-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
   --thin: 100;
   --extra-light: 200;
   --light: 300;
@@ -10,16 +14,13 @@
   --medium: 500;
   --semi-bold: 600;
   --bold: 700;
-  --shading: rgba(0, 0, 0, 0.4);
-  --faded-text: rgba(0, 0, 0, 0.6);
-  --shadow: 0 0 4px rgba(0, 0, 0, 0.25);
-  --big-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
 }
 
 /* Null styles */
 *,
 *::before,
 *::after {
+  font-weight: var(--medium);
   box-sizing: border-box;
   padding: 0;
 }
@@ -53,8 +54,9 @@ li {
 body {
   min-height: 100vh;
   font-family: Raleway, Arial, Helvetica, sans-serif;
-  background-color: var(--bgc);
-  font-weight: 500;
+  font-size: 14px;
+  background-color: var(--bgc-color);
+  color: var(--text-color);
   text-rendering: optimizeSpeed;
 }
 
@@ -63,6 +65,10 @@ button,
 textarea,
 select {
   font: inherit;
+  color: inherit;
+  font-weight: inherit;
+  border: none;
+  outline: none;
 }
 
 button {
