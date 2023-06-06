@@ -1,0 +1,10 @@
+.env
+
+__pycache__
+
+apps/users/migrations/*
+apps/texts/migrations/*
+
+*.sqlite3
+
+request.log
