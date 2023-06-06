@@ -13,4 +13,16 @@ export default class APIService {
       hash: data.hash
     };
   }
+
+  static async getNoteDetails(hash) {
+    let response = await fetch(`/api/v1/text-blocks/${hash}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+    let data = await response.json()
+
+    return data
+  }
 }
