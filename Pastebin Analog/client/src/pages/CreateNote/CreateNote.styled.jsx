@@ -35,7 +35,7 @@ export const TextField = styled.textarea`
   border-radius: 5px;
   border: 1px solid var(--text-color);
   box-sizing: border-box;
-  transition: border 1s ease, box-shadow 1s ease, background-color 1s ease;
+  transition: border 0.5s ease, box-shadow 0.5s ease, background-color 1s ease;
 
   &:focus {
     border-color: transparent;
