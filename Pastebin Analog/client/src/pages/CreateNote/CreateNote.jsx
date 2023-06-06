@@ -1,13 +1,28 @@
 import { useState } from 'react'
 import * as S from './CreateNote.styled'
 import Header from '../../components/Header/Header'
+import ErrorMessage from '../../components/ErrorMessage/ErrorMessage'
 
 
 const CreateNote = () => {
-  const MAX_TEXT_LENGTH = 2000
+  const MAX_TEXT_LENGTH = 10
   const [text, setText] = useState('')
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+
   const textColor = text.length > MAX_TEXT_LENGTH ?
    'var(--warning-red)' : 'inherit';
+
+  const handleCreateNote = () => {
+    if (text.length > MAX_TEXT_LENGTH) {
+      setShowErrorMessage(true);
+    } else {
+      // Create note
+    }
+  };
+
+  const handleCloseErrorMessage = () => {
+    setShowErrorMessage(false)
+  }
 
   return (
     <S.Container>
@@ -38,7 +53,11 @@ const CreateNote = () => {
             </S.TimeSelect>
           </S.ParameterContainer>
         </S.SettingsContainer>
-        <S.CreateButton>Create Note!</S.CreateButton>
+        {showErrorMessage && <ErrorMessage text='Note is too long'
+                               handleClose={handleCloseErrorMessage}/>}
+        <S.CreateButton onClick={handleCreateNote}>
+          Create Note!
+        </S.CreateButton>
       </S.Content>
     </S.Container>
   )
