@@ -1,6 +1,5 @@
 from typing import (
     Dict,
-    Optional,
 )
 from django.utils import timezone
 from rest_framework import serializers
@@ -13,7 +12,8 @@ from texts.models import TextBlock
 
 class SimpleTextBlockSerializer(ModelSerializer):
     expiration_time = serializers.DateTimeField(
-        required=False, allow_null=True, format='%Y-%m-%d %H:%M:%S')
+        required=False, allow_null=True, format='%d.%m.%Y %H:%M:%S')
+    created_at = serializers.DateTimeField(format='%d.%m.%Y')
     class Meta:
         model = TextBlock
         fields = (
@@ -23,13 +23,15 @@ class SimpleTextBlockSerializer(ModelSerializer):
             'view_count',
             'expiration_time',
             'hash',
+            'created_at',
         )
         read_only_fields = fields
 
 
 class TextBlockSerializer(ModelSerializer):
     expiration_time = serializers.DateTimeField(
-        required=False, allow_null=True, format='%Y-%m-%d %H:%M:%S')
+        required=False, allow_null=True, format='%d.%m.%Y %H:%M:%S')
+    created_at = serializers.DateTimeField(format='%d.%m.%Y')
     class Meta:
         model = TextBlock
         fields = (
@@ -40,6 +42,7 @@ class TextBlockSerializer(ModelSerializer):
             'text',
             'view_count',
             'expiration_time',
+            'created_at',
         )
         read_only_fields = fields
 
@@ -49,6 +52,8 @@ class CUTextBlockSerializer(ModelSerializer):
     expiration_time = serializers.DateTimeField(
         required=False, allow_null=True,
         read_only=True, format='%Y-%m-%d %H:%M:%S')
+    created_at = serializers.DateTimeField(
+        read_only=True, format='%d.%m.%Y')
 
     class Meta:
         model = TextBlock
@@ -60,6 +65,7 @@ class CUTextBlockSerializer(ModelSerializer):
             'text',
             'view_count',
             'expiration_time',
+            'created_at',
             'time_delta',
         )
         read_only_fields = (
@@ -67,6 +73,7 @@ class CUTextBlockSerializer(ModelSerializer):
             'hash',
             'author',
             'expiration_time',
+            'created_at',
             'view_count',
         )
         write_only_fields = (
