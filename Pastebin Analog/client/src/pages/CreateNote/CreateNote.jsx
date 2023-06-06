@@ -5,18 +5,25 @@ import ErrorMessage from '../../components/ErrorMessage/ErrorMessage'
 
 
 const CreateNote = () => {
-  const MAX_TEXT_LENGTH = 10
+  const MAX_TEXT_LENGTH = 2000
   const [text, setText] = useState('')
   const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [errorText, setErrorText] = useState('')
 
   const textColor = text.length > MAX_TEXT_LENGTH ?
    'var(--warning-red)' : 'inherit';
 
   const handleCreateNote = () => {
-    if (text.length > MAX_TEXT_LENGTH) {
+    if (text.length == 0){
+      setShowErrorMessage(true)
+      setErrorText("Note can't be blank!")
+    }
+    else if (text.length > MAX_TEXT_LENGTH) {
       setShowErrorMessage(true);
-    } else {
-      // Create note
+      setErrorText('Note is too long!')
+    }
+    else {
+      // Create Note
     }
   };
 
@@ -53,7 +60,7 @@ const CreateNote = () => {
             </S.TimeSelect>
           </S.ParameterContainer>
         </S.SettingsContainer>
-        {showErrorMessage && <ErrorMessage text='Note is too long'
+        {showErrorMessage && <ErrorMessage text={errorText}
                                handleClose={handleCloseErrorMessage}/>}
         <S.CreateButton onClick={handleCreateNote}>
           Create Note!
