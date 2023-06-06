@@ -9,9 +9,9 @@ from rest_framework.parsers import (
     JSONParser,
 )
 from rest_framework.generics import (
+    GenericAPIView,
     ListAPIView,
     RetrieveAPIView,
-    UpdateAPIView,
     CreateAPIView,
 )
 from rest_framework.throttling import (
@@ -135,7 +135,7 @@ class CreateTextBlockView(CreateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class UpdateTextBlockView(UpdateAPIView):
+class UpdateTextBlockView(GenericAPIView):
     parser_classes = (JSONParser,)
     serializer_class = CUTextBlockSerializer
     queryset = TextBlock.objects.all()
