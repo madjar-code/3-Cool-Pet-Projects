@@ -14,6 +14,8 @@ class TextBlockManager(SoftDeletionManager):
 
 
 class TextBlock(BaseModel):
+    title = models.CharField(
+        max_length=120, blank=True, null=True)
     text = models.TextField(max_length=2096)
     author = models.ForeignKey(
         to=User, on_delete=models.SET_NULL,

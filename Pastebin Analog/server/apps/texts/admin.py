@@ -6,6 +6,7 @@ from .models import TextBlock
 class TextBlockAdmin(BaseAdmin):
     list_display = (
         'short_text',
+        'title',
         'author',
         'hash',
         'view_count',
