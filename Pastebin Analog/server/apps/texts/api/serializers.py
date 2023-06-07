@@ -51,7 +51,7 @@ class CUTextBlockSerializer(ModelSerializer):
     time_delta = serializers.IntegerField(required=False, allow_null=True)
     expiration_time = serializers.DateTimeField(
         required=False, allow_null=True,
-        read_only=True, format='%Y-%m-%d %H:%M:%S')
+        read_only=True, format='%d.%m.%Y %H:%M:%S')
     created_at = serializers.DateTimeField(
         read_only=True, format='%d.%m.%Y')
 
