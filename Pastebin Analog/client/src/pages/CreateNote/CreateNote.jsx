@@ -102,6 +102,7 @@ const CreateNote = () => {
           Create Note!
         </S.CreateButton>
       </S.Content>
+      <LoginModal/>
     </S.Container>
   )
 }
