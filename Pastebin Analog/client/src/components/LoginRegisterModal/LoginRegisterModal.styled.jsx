@@ -82,6 +82,14 @@ export const Input = styled.input`
   }
 `;
 
+export const ErrorMessage = styled.p`
+  margin-top: -3px;
+  margin-left: 21px;
+  font-size: 12px;
+  font-weight: 600;
+  color: red;
+`
+
 export const LoginButton = styled.button`
   margin-top: 25px;
   position: relative;
