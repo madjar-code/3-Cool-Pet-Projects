@@ -28,3 +28,6 @@ export const LoginButton = styled.img`
   right: 13px;
   top: 11px;
 `
+
+export const LogoutButton = styled(LoginButton)`
+`

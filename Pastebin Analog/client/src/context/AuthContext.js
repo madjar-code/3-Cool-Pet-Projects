@@ -39,6 +39,12 @@ export const AuthProvider = ({ children }) => {
     return response.status
   }
 
+  const logoutUser = () => {
+    setAuthTokens(null)
+    setUser(null)
+    localStorage.removeItem('authTokens')
+  }
+
   const updateToken = async () => {
     let response = await fetch('/api/v1/token/refresh/', {
       method: 'POST',
@@ -64,6 +70,7 @@ export const AuthProvider = ({ children }) => {
   let contextData = {
     user: user,
     authTokens: authTokens,
+    logoutUser: logoutUser,
     loginUser: loginUser,
   }
 
