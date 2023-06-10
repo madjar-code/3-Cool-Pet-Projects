@@ -35,7 +35,7 @@ export const TextField = styled.textarea`
   border-radius: 5px;
   border: 1px solid var(--text-color);
   box-sizing: border-box;
-  transition: border 0.5s ease, box-shadow 0.5s ease, background-color 1s ease;
+  transition: border 0.35s ease, box-shadow 0.35s ease, background-color 1s ease;
 
   &:focus {
     border-color: transparent;
@@ -97,7 +97,7 @@ export const CreateButton = styled.button`
   background-color: var(--front-color);
   border-radius: 10px;
   box-shadow: var(--simple-shadow);
-  transition: 500ms;
+  transition: 200ms;
 
   &:hover {
     background-color: var(--dark-grey);

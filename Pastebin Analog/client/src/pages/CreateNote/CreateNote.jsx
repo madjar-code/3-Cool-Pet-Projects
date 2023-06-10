@@ -3,12 +3,14 @@ import * as S from './CreateNote.styled'
 import Header from '../../components/Header/Header'
 import ErrorMessage from '../../components/ErrorMessage/ErrorMessage'
 import APIService from '../../API/APIService'
+import LoginRegisterModal from '../../components/LoginRegisterModal/LoginRegisterModal'
 
 
 const CreateNote = () => {
   const MAX_TEXT_LENGTH = 2000
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [modalState, setModalState] = useState('no modal')
   const [errorText, setErrorText] = useState('')
 
   const [credentials, setCredentials] = useState(
@@ -36,7 +38,6 @@ const CreateNote = () => {
       setIsButtonDisabled(true);
       APIService.createNote(credentials)
       .then(data => {
-        console.log(data);
         setTimeout(() => {
           setIsButtonDisabled(false);
         }, 10000);
@@ -63,7 +64,7 @@ const CreateNote = () => {
 
   return (
     <S.Container>
-      <Header/>
+      <Header setModalState={setModalState}/>
       <S.Content>
         <S.TextContainer>
           <S.TextCounter color={textColor}>
@@ -102,7 +103,8 @@ const CreateNote = () => {
           Create Note!
         </S.CreateButton>
       </S.Content>
-      <LoginModal/>
+      { modalState !== 'no modal' && <LoginRegisterModal modalState={modalState}
+                                        setModalState={setModalState}/>}
     </S.Container>
   )
 }

@@ -22,3 +22,9 @@ export const Logo = styled.h1`
   padding-top: 11.5px;
   font-size: 22px;
 `
+
+export const LoginButton = styled.img`
+  position: absolute;
+  right: 13px;
+  top: 11px;
+`
