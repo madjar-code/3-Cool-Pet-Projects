@@ -7,15 +7,18 @@ import {
 
 import CreateNote from './pages/CreateNote/CreateNote';
 import NoteDetails from './pages/NoteDetails/NoteDetails';
+import { AuthProvider } from './context/AuthContext';
 
 
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path='/' element={<CreateNote/>}/>
-        <Route path='/:hash' element={<NoteDetails/>}/>
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path='/' element={<CreateNote/>}/>
+          <Route path='/:hash' element={<NoteDetails/>}/>
+        </Routes>
+      </AuthProvider>
     </Router>
   );
 }
