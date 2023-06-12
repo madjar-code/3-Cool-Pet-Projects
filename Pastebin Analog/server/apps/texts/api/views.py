@@ -23,7 +23,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from drf_yasg.utils import swagger_auto_schema
 from users.models import User
-from texts.models import TextBlock
+from texts.models import (
+    TextBlock,
+    Device,
+)
 from texts.services.hash import hash_factory
 from .serializers import (
     SimpleTextBlockSerializer,
@@ -166,17 +169,17 @@ class TextBlockDetailsView(RetrieveAPIView):
         text_block: TextBlock = self.queryset.filter(hash=hash).first()
         if not text_block:
             return Response({'error': ErrorMessages.NO_TEXT_BLOCK.value},
-                            status=status.HTTP_404_NOT_FOUND)    
+                            status=status.HTTP_404_NOT_FOUND)
         ip_address = request.META.get('REMOTE_ADDR')
 
-        viewed_device, created = text_block.\
-            viewed_devices.get_or_create(ip_address=ip_address)
-        
-        if created:
+        viewed_device, created = Device.objects.get_or_create(ip_address=ip_address)
+
+        if created or not text_block.viewed_devices.\
+                filter(ip_address=ip_address).exists():
             text_block.view_count = F('view_count') + 1
+            text_block.viewed_devices.add(viewed_device)
             text_block.save()
 
-        text_block.viewed_devices.add(viewed_device)
         text_block.refresh_from_db()
         serializer: TextBlockSerializer = self.serializer_class(text_block)    
         return Response(data=serializer.data, status=status.HTTP_200_OK)
