@@ -1,13 +1,15 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import * as S from './CreateNote.styled'
 import Header from '../../components/Header/Header'
 import ErrorMessage from '../../components/ErrorMessage/ErrorMessage'
 import APIService from '../../API/APIService'
 import LoginRegisterModal from '../../components/LoginRegisterModal/LoginRegisterModal'
+import AuthContext from '../../context/AuthContext'
 
 
 const CreateNote = () => {
   const MAX_TEXT_LENGTH = 2000
+  const { authTokens } = useContext(AuthContext)
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [modalState, setModalState] = useState('no modal')
@@ -36,7 +38,7 @@ const CreateNote = () => {
     else {
       setShowErrorMessage(false)
       setIsButtonDisabled(true);
-      APIService.createNote(credentials)
+      APIService.createNote(credentials, authTokens)
       .then(data => {
         setTimeout(() => {
           setIsButtonDisabled(false);
