@@ -33,7 +33,7 @@ export const MetadataContainer = styled.div`
   padding: 8px;
   display: flex;
   justify-content: center;
-  width: 250px;
+  /* width: 250px; */
   background-color: var(--front-color);
 `
 
@@ -91,5 +91,6 @@ export const LinkButton = styled.button`
   width: 95px;
   height: 30px;
   border-radius: 0 5px 5px 0;
-  background-color: var(--dark-grey);
-`
+  background-color: ${props => props.copied ? "#444444" : "var(--dark-grey)"};
+  transition: background-color 0.2s;
+`;

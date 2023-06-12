@@ -11,6 +11,7 @@ import EyeIconImage from '../../assets/images/NoteDetails/EyeIconImage.svg'
 
 const NoteDetails = () => {
   const [note, setNote] = useState()
+  const [copied, setCopied] = useState(false);
   const linkRef = useRef(null)
   const params = useParams()
 
@@ -56,6 +57,10 @@ const NoteDetails = () => {
       window.getSelection().addRange(range);
       document.execCommand('copy');
       window.getSelection().removeAllRanges();
+      setCopied(true);
+      setTimeout(() => {
+        setCopied(false);
+      }, 1500);
     }
   };
 
@@ -83,7 +88,9 @@ const NoteDetails = () => {
         </S.MetadataContainer>
         <S.LinkContainer>
           <S.Link ref={linkRef}>notify.com/{note?.hash}</S.Link>
-          <S.LinkButton onClick={handleCopyLink}>Copy Link!</S.LinkButton>
+          <S.LinkButton onClick={handleCopyLink} copied={copied}>
+            {copied ? "Copied!" : "Copy Link!"}
+          </S.LinkButton>
         </S.LinkContainer>
       </S.Content>
     </S.Container>
