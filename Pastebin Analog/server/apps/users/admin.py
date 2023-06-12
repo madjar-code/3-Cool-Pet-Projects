@@ -36,6 +36,30 @@ class UserAdmin(UserAdmin,
         'is_staff',
     )
     ordering = ('-created_at',)
+    fieldsets = (
+        (None, {
+            'fields': (
+                'email',
+                'username',
+                )
+            }
+        ),
+        ('Permissions', {
+            'fields': (
+                'is_staff',
+                'is_active'
+                )
+            }
+        ),
+        ('Others', {
+            'fields': (
+                'id',
+                'created_at',
+                'updated_at'
+                )
+            }
+        )
+    )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
