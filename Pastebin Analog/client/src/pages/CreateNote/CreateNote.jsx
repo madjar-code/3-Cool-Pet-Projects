@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import * as S from './CreateNote.styled'
 import Header from '../../components/Header/Header'
 import ErrorMessage from '../../components/ErrorMessage/ErrorMessage'
@@ -9,6 +10,7 @@ import AuthContext from '../../context/AuthContext'
 
 const CreateNote = () => {
   const MAX_TEXT_LENGTH = 2000
+  const navigate = useNavigate()
   const { authTokens } = useContext(AuthContext)
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -43,6 +45,7 @@ const CreateNote = () => {
         setTimeout(() => {
           setIsButtonDisabled(false);
         }, 10000);
+        navigate(`/${data.hash}`)
       });
     }
   };
