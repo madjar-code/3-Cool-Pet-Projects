@@ -1,5 +1,4 @@
 import { useState, useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
 import * as S from './LoginRegisterModal.styled'
 import RightArrowImage from '../../assets/images/LoginRegisterModal/RightArrowImage.svg'
 import CloseButtonImage from '../../assets/images/LoginRegisterModal/CloseButtonImage.svg'
@@ -7,35 +6,66 @@ import AuthContext from '../../context/AuthContext'
 
 
 const LoginRegisterModal = ({ modalState, setModalState }) => {
-  const { loginUser } = useContext(AuthContext)
-  const [credentials, setCredentials] =
+  const {loginUser, registerUser} = useContext(AuthContext)
+  const [loginCredentials, setLoginCredentials] = 
     useState({email: '', password: ''})
+  const [registerCredentials, setRegisterCredentials] =
+    useState({username: '', email: '', password: '', confirm_password: ''})
+  const [errorCredentials, setErrorCredentials] = useState({})
+
   let modalContent = null
   let bottomButton = null
+  
+  const [loginValid, setLoginValid] = useState(true)
 
-  const [valid, setValid] = useState(true)
-  const navigate = useNavigate()
-
-  const handleEmailChange = (e) => {
-    setCredentials({...credentials, email: e.target.value })
+  const handleLoginEmailChange = (e) => {
+    setLoginCredentials({...loginCredentials, email: e.target.value })
   }
 
-  const handlePasswordChange = (e) => {
-    setCredentials({ ...credentials, password: e.target.value })
+  const handleLoginPasswordChange = (e) => {
+    setLoginCredentials({ ...loginCredentials, password: e.target.value })
   }
 
   const handleLoginClick = () => {
-    setValid(true)
-    loginUser(credentials).then(
+    setLoginValid(true)
+    loginUser(loginCredentials).then(
       status => {
         if (status === 200){
           setModalState('no modal')
         }
         else {
-          setValid(false)
+          setLoginValid(false)
         }
       }
     )
+  }
+
+  const handleRegisterUsernameChange = (e) => {
+    setRegisterCredentials({ ...registerCredentials, username: e.target.value })
+  }
+
+  const handleRegisterEmailChange = (e) => {
+    setRegisterCredentials({ ...registerCredentials, email: e.target.value })
+  }
+
+  const handleRegisterPasswordChange = (e) => {
+    setRegisterCredentials({ ...registerCredentials, password: e.target.value })
+  }
+
+  const handleRegisterConfirmPasswordChange = (e) => {
+    setRegisterCredentials({ ...registerCredentials, confirm_password: e.target.value })
+  }
+
+  const handleRegisterClick = () => {
+    setErrorCredentials({})
+    registerUser(registerCredentials).then(
+      response_obj => {
+        if (response_obj.status !== 201){
+          setErrorCredentials(response_obj.data)
+          
+        }
+      }
+    )  
   }
 
   if (modalState === 'login'){
@@ -43,12 +73,12 @@ const LoginRegisterModal = ({ modalState, setModalState }) => {
       <>
         <S.Title>Login</S.Title>
         <S.Input
-          placeholder="Почта..."
-          onChange={(e) => handleEmailChange(e)}/>
+          placeholder="Email..."
+          onChange={handleLoginEmailChange}/>
         <S.Input
-          placeholder="Пароль..." type="password"
-          onChange={(e) => handlePasswordChange(e)}/>
-        {!valid && <S.ErrorMessage>Incorrect email or password</S.ErrorMessage>}
+          placeholder="Password..." type="password"
+          onChange={handleLoginPasswordChange}/>
+        {!loginValid && <S.LoginErrorMessage>Incorrect email or password</S.LoginErrorMessage>}
         <S.LoginButton onClick={handleLoginClick}>
           Log in!
         </S.LoginButton>
@@ -64,14 +94,38 @@ const LoginRegisterModal = ({ modalState, setModalState }) => {
 
   } else if (modalState === 'register'){
     modalContent =
-      <>
-        <S.Title>Register</S.Title>
-        <S.Input placeholder='Username...'/>
-        <S.Input placeholder='Email...'/>
-        <S.Input placeholder='Password...'/>
-        <S.Input placeholder='Confirm password...'/>
-        <S.RegisterButton>Sign up!</S.RegisterButton>
-      </>
+    <>
+      <S.Title>Register</S.Title>
+      <S.Input
+        placeholder="Username..."
+        onChange={handleRegisterUsernameChange}
+      />
+      {errorCredentials.username && (
+        <S.ErrorMessage>{errorCredentials.username[0]}</S.ErrorMessage>
+      )}  
+      <S.Input
+        placeholder="Email..."
+        onChange={handleRegisterEmailChange}
+      />
+      {errorCredentials.email && (
+        <S.ErrorMessage>{errorCredentials.email[0]}</S.ErrorMessage>
+      )}
+      <S.Input
+        placeholder="Password..." type='password'
+        onChange={handleRegisterPasswordChange}
+      />
+      {errorCredentials.password && (
+        <S.ErrorMessage>{errorCredentials.password[0]}</S.ErrorMessage>
+      )}
+      <S.Input
+        placeholder="Confirm password..." type='password'
+        onChange={handleRegisterConfirmPasswordChange}
+      />
+      {errorCredentials.confirm_password && (
+        <S.ErrorMessage>{errorCredentials.confirm_password[0]}</S.ErrorMessage>
+      )}
+      <S.RegisterButton onClick={handleRegisterClick}>Sign up!</S.RegisterButton>
+    </>
 
     bottomButton = 
       <S.ButtonWrapper>

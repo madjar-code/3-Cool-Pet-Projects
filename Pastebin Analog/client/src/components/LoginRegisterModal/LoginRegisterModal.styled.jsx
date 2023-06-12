@@ -61,7 +61,7 @@ export const Modal = styled.div`
 
 export const Input = styled.input`
   width: 100%;
-  margin-top: 20px;
+  margin-top: 24px;
   height: 32px;
   border-radius: 5px;
   outline: none;
@@ -82,16 +82,26 @@ export const Input = styled.input`
   }
 `;
 
-export const ErrorMessage = styled.p`
-  margin-top: -3px;
-  margin-left: 21px;
+export const ErrorMessage = styled.div`
+  width: 320px;
+  position: absolute;
+  margin-left: 10px;
   font-size: 12px;
   font-weight: 600;
-  color: red;
+  color: #F50000;
+`
+
+export const LoginErrorMessage = styled.div`
+  width: 100%;
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  color: #F50000;
 `
 
 export const LoginButton = styled.button`
-  margin-top: 25px;
+  margin-top: 20px;
   position: relative;
   left: 50%;
   margin-left: -60px;
