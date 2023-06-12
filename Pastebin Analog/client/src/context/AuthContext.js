@@ -47,9 +47,14 @@ export const AuthProvider = ({ children }) => {
       },
       body: JSON.stringify(credentials)
     })
-
+  
     let data = await response.json()
-    return {data: data, status: response.status}
+  
+    if (response.status === 201) {
+      await loginUser(credentials) // Вход пользователя после успешной регистрации
+    }
+  
+    return { data: data, status: response.status }
   }
 
   const logoutUser = () => {

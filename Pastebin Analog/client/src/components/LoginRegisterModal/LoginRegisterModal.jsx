@@ -58,14 +58,14 @@ const LoginRegisterModal = ({ modalState, setModalState }) => {
 
   const handleRegisterClick = () => {
     setErrorCredentials({})
-    registerUser(registerCredentials).then(
-      response_obj => {
-        if (response_obj.status !== 201){
-          setErrorCredentials(response_obj.data)
-          
-        }
+    registerUser(registerCredentials).then((response_obj) => {
+      if (response_obj.status !== 201) {
+        setErrorCredentials(response_obj.data)
       }
-    )  
+      else {
+        setModalState('no modal')
+      }
+    })
   }
 
   if (modalState === 'login'){
@@ -98,6 +98,7 @@ const LoginRegisterModal = ({ modalState, setModalState }) => {
       <S.Title>Register</S.Title>
       <S.Input
         placeholder="Username..."
+        autocomplete="off"
         onChange={handleRegisterUsernameChange}
       />
       {errorCredentials.username && (
@@ -105,20 +106,25 @@ const LoginRegisterModal = ({ modalState, setModalState }) => {
       )}  
       <S.Input
         placeholder="Email..."
+        autocomplete="off"
         onChange={handleRegisterEmailChange}
       />
       {errorCredentials.email && (
         <S.ErrorMessage>{errorCredentials.email[0]}</S.ErrorMessage>
       )}
       <S.Input
-        placeholder="Password..." type='password'
+        placeholder="Password..."
+        autocomplete="off"
+        type='password'
         onChange={handleRegisterPasswordChange}
       />
       {errorCredentials.password && (
         <S.ErrorMessage>{errorCredentials.password[0]}</S.ErrorMessage>
       )}
       <S.Input
-        placeholder="Confirm password..." type='password'
+        placeholder="Confirm password..."
+        autocomplete='off'
+        type='password'
         onChange={handleRegisterConfirmPasswordChange}
       />
       {errorCredentials.confirm_password && (
