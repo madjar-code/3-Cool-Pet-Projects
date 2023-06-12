@@ -1,9 +1,20 @@
 from django.db import models
 from django.db.models import Q, Manager
 from django.utils import timezone
-from common.mixins.models import BaseModel
+from common.mixins.models import (
+    UUIDModel,
+    BaseModel,
+)
 from common.mixins.managers import SoftDeletionManager
 from users.models import User
+
+
+class Device(UUIDModel):
+    ip_address = models.GenericIPAddressField(unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return self.ip_address
 
 
 class TextBlockManager(SoftDeletionManager):
@@ -25,6 +36,8 @@ class TextBlock(BaseModel):
     expiration_time = models.DateTimeField(
         null=True, blank=True, db_index=True)
     view_count = models.IntegerField(default=0)
+    viewed_devices = models.ManyToManyField(
+        to=Device, related_name='viewed_text_blocks')
 
     objects = Manager()
     active_objects = SoftDeletionManager()
