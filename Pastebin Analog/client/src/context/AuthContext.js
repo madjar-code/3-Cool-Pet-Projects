@@ -39,6 +39,19 @@ export const AuthProvider = ({ children }) => {
     return response.status
   }
 
+  const registerUser = async (credentials) => {
+    let response = await fetch('/api/v1/users/register/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(credentials)
+    })
+
+    let data = await response.json()
+    return {data: data, status: response.status}
+  }
+
   const logoutUser = () => {
     setAuthTokens(null)
     setUser(null)
@@ -72,6 +85,7 @@ export const AuthProvider = ({ children }) => {
     authTokens: authTokens,
     logoutUser: logoutUser,
     loginUser: loginUser,
+    registerUser: registerUser,
   }
 
   useEffect(() => {
