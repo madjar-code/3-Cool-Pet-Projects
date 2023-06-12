@@ -1,10 +1,15 @@
 export default class APIService {
-  static async createNote(credentials){
+  static async createNote(credentials, authTokens){
+    let headers = {
+      'Content-Type': 'application/json'
+    }
+    if (authTokens){
+      headers['Authorization'] = `Bearer ${authTokens.access}`
+    }
+
     let response = await fetch('/api/v1/text-blocks/create/', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: headers,
       body: JSON.stringify(credentials)
     })
     let data = await response.json();
