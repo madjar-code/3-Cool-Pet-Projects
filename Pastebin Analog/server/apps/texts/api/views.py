@@ -20,7 +20,10 @@ from rest_framework.throttling import (
 )
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated,
+)
 from drf_yasg.utils import swagger_auto_schema
 from users.models import User
 from texts.models import (
@@ -183,3 +186,20 @@ class TextBlockDetailsView(RetrieveAPIView):
         text_block.refresh_from_db()
         serializer: TextBlockSerializer = self.serializer_class(text_block)    
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class DeleteTextBlockView(GenericAPIView):
+    parser_classes = (JSONParser,)
+    permission_classes = (IsAuthenticated,)
+    queryset = TextBlock.text_objects.all()
+    lookup_field = 'hash'
+
+    @swagger_auto_schema(operation_id='text_block_delete')
+    def delete(self, request: Request, hash: str) -> Response:
+        text_block: TextBlock = self.queryset.filter(hash=hash).first()
+        if not text_block:
+            return Response({'error': ErrorMessages.NO_TEXT_BLOCK.value},
+                            status=status.HTTP_404_NOT_FOUND)
+        text_block.soft_delete()
+        return Response({'message': 'Deletion complete'},
+                        status=status.HTTP_204_NO_CONTENT)
