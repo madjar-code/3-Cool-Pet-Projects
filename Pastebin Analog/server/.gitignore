@@ -7,4 +7,5 @@ apps/texts/migrations/*
 
 *.sqlite3
 
+app.log
 request.log
