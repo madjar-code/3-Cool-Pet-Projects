@@ -37,7 +37,8 @@ class TextBlock(BaseModel):
         null=True, blank=True, db_index=True)
     view_count = models.IntegerField(default=0)
     viewed_devices = models.ManyToManyField(
-        to=Device, related_name='viewed_text_blocks')
+        to=Device, related_name='viewed_text_blocks',
+        blank=True)
 
     objects = Manager()
     active_objects = SoftDeletionManager()
