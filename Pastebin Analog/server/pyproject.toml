@@ -20,6 +20,7 @@ djangorestframework-simplejwt = "^5.2.2"
 google-cloud-storage = "^2.9.0"
 django-storages = {extras = ["google"], version = "^1.13.2"}
 google-api-python-client = "^2.88.0"
+django-redis = "^5.2.0"
 
 
 [build-system]
