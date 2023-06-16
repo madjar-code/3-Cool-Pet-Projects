@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useContext } from 'react'
 import { useParams } from 'react-router-dom'
 import * as S from './NoteDetails.styled'
 import Header from '../../components/Header/Header'
@@ -8,12 +8,16 @@ import CalendarIconImage from '../../assets/images/NoteDetails/CalendarIconImage
 import TimeIconImage from '../../assets/images/NoteDetails/TimeIconImage.svg'
 import EyeIconImage from '../../assets/images/NoteDetails/EyeIconImage.svg'
 import LoginRegisterModal from '../../components/LoginRegisterModal/LoginRegisterModal';
+import AuthContext from '../../context/AuthContext';
+import EditNoteImage from '../../assets/images/NoteDetails/EditNoteImage.svg'
+import DeleteNoteIcon from '../../assets/images/NoteDetails/DeleteNoteImage.svg'
 
 
 const NoteDetails = () => {
   const [note, setNote] = useState()
   const [copied, setCopied] = useState(false);
   const [modalState, setModalState] = useState('no modal')
+  const {user} = useContext(AuthContext)
   const linkRef = useRef(null)
   const params = useParams()
 
@@ -23,6 +27,10 @@ const NoteDetails = () => {
         then(data => setNote(data));
     }
   }, [params.hash, note])
+
+  const isAuthor = () => {
+    return user?.user_id == note?.author
+  }
 
   const formatTimeDelta = (hours, minutes) => {
     let timeDelta = ''
@@ -49,6 +57,12 @@ const NoteDetails = () => {
 
   if (!note) {
     return null;
+  }
+
+  const handleEditClick = () => { 
+  }
+
+  const handleDeleteClick = () => { 
   }
 
   const handleCopyLink = () => {
@@ -94,6 +108,18 @@ const NoteDetails = () => {
             {copied ? "Copied!" : "Copy Link!"}
           </S.LinkButton>
         </S.LinkContainer>
+        {
+          isAuthor() && 
+          <S.ButtonContainer>
+            <S.EditButton onClick={handleEditClick}>
+              <S.EditIcon src={EditNoteImage}/>
+            </S.EditButton>
+            <S.DeleteButton onClick={handleDeleteClick}>
+              <S.DeleteIcon src={DeleteNoteIcon}/>
+            </S.DeleteButton>
+          </S.ButtonContainer>
+    
+        }
       </S.Content>
       { modalState !== 'no modal' && <LoginRegisterModal modalState={modalState}
                                         setModalState={setModalState}/>}

@@ -5,10 +5,7 @@ from django.core.cache import cache
 from django.db.models import F, QuerySet
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from django.views.decorators.vary import (
-    vary_on_cookie,
-    vary_on_headers,
-)
+from django.views.decorators.vary import vary_on_cookie
 from django.contrib.auth.models import AnonymousUser
 from rest_framework import status
 from rest_framework.parsers import (

@@ -94,3 +94,36 @@ export const LinkButton = styled.button`
   background-color: ${props => props.copied ? "#444444" : "var(--dark-grey)"};
   transition: background-color 0.2s;
 `;
+
+export const ButtonContainer = styled.div`
+  margin-top: 45px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
+`
+
+export const EditButton = styled.button`
+  border-radius: 10px;
+  width: 100%;
+  height: 35px;
+  background-color: var(--front-color);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+
+  transition: 200ms;
+
+  &:hover {
+    background-color: var(--dark-grey);
+    box-shadow: none;
+  }
+`
+
+export const DeleteButton = styled(EditButton)`
+`
+
+export const EditIcon = styled.img`
+  margin-top: 5px;
+`
+
+export const DeleteIcon = styled(EditIcon)`
+`

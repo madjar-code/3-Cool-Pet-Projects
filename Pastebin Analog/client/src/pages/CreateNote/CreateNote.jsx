@@ -45,7 +45,7 @@ const CreateNote = () => {
         setTimeout(() => {
           setIsButtonDisabled(false);
         }, 10000);
-        navigate(`/${data.hash}`)
+        navigate(`/${data?.hash}`)
       });
     }
   };
