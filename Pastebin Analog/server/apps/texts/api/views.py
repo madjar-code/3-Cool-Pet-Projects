@@ -59,7 +59,7 @@ class TextBlockListView(ListAPIView):
     queryset = TextBlock.text_objects.all()
 
     @swagger_auto_schema(operation_id='all_text_blocks')
-    @method_decorator(cache_page(50))
+    @method_decorator(cache_page(30))
     @method_decorator(vary_on_cookie)
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
@@ -93,6 +93,7 @@ class TextsForUser(ListAPIView):
     queryset = TextBlock.text_objects.all()
 
     @swagger_auto_schema(operation_id='text_blocks_for_user')
+    @method_decorator(cache_page(40, key_prefix='texts_for_user'))
     def get(self, request: Request, username: str) -> Response:
         user: User = User.objects.filter(username=username).first()
         if not user:
