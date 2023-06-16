@@ -3,6 +3,12 @@ from typing import List
 from concurrent.futures import ThreadPoolExecutor
 from django.core.cache import cache
 from django.db.models import F, QuerySet
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import (
+    vary_on_cookie,
+    vary_on_headers,
+)
 from django.contrib.auth.models import AnonymousUser
 from rest_framework import status
 from rest_framework.parsers import (
@@ -53,6 +59,8 @@ class TextBlockListView(ListAPIView):
     queryset = TextBlock.text_objects.all()
 
     @swagger_auto_schema(operation_id='all_text_blocks')
+    @method_decorator(cache_page(50))
+    @method_decorator(vary_on_cookie)
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
