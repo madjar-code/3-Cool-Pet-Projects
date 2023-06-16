@@ -7,11 +7,13 @@ import APIService from '../../API/APIService'
 import CalendarIconImage from '../../assets/images/NoteDetails/CalendarIconImage.svg'
 import TimeIconImage from '../../assets/images/NoteDetails/TimeIconImage.svg'
 import EyeIconImage from '../../assets/images/NoteDetails/EyeIconImage.svg'
+import LoginRegisterModal from '../../components/LoginRegisterModal/LoginRegisterModal';
 
 
 const NoteDetails = () => {
   const [note, setNote] = useState()
   const [copied, setCopied] = useState(false);
+  const [modalState, setModalState] = useState('no modal')
   const linkRef = useRef(null)
   const params = useParams()
 
@@ -66,7 +68,7 @@ const NoteDetails = () => {
 
   return (
     <S.Container>
-      <Header/>
+      <Header setModalState={setModalState}/>
       <S.Content>
         { note?.title && <S.Title>{note?.title}</S.Title>}
         <S.TextContainer>{note?.text}</S.TextContainer>
@@ -93,6 +95,8 @@ const NoteDetails = () => {
           </S.LinkButton>
         </S.LinkContainer>
       </S.Content>
+      { modalState !== 'no modal' && <LoginRegisterModal modalState={modalState}
+                                        setModalState={setModalState}/>}
     </S.Container>
   )
 }
