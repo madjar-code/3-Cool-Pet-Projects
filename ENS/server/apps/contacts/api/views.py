@@ -17,6 +17,6 @@ class ContactsListView(ListAPIView):
 
     queryset = Contact.active_objects.all()
 
-    @swagger_auto_schema(operation_id='all_text_blocks')
+    @swagger_auto_schema(operation_id='all_contacts')
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
