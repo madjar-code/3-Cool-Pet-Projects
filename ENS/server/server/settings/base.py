@@ -38,7 +38,10 @@ THIRD_PART_APPS = [
     'drf_yasg'
 ]
 
-LOCAL_APPS = []
+LOCAL_APPS = [
+    'users',
+    'common',
+]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PART_APPS + LOCAL_APPS
 
@@ -163,7 +166,7 @@ SLUG_ALPHABET = ascii_letters + digits
 DEFAULT_SLUG_LENGTH = 7
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-# AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users.User'
 
 logger = logging.getLogger(__name__)
 
