@@ -13,6 +13,8 @@ django-jazzmin = "^2.6.0"
 drf-yasg = "^1.21.6"
 django-environ = "^0.10.0"
 djangorestframework-simplejwt = "^5.2.2"
+django-phonenumber-field = "5.2.0"
+phonenumbers = "8.12.33"
 
 
 [build-system]
