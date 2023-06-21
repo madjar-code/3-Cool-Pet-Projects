@@ -2,7 +2,7 @@
 name = "pastebin"
 version = "0.1.0"
 description = "Pastebin Analog"
-authors = ["Madjar Ivan <evanmadjar@gmail.com>"]
+authors = ["Madjar Evan <evanmadjar@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]

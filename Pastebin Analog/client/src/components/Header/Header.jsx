@@ -13,7 +13,7 @@ const Header = ({ setModalState }) => {
     <S.Container>
       <S.Wrapper>
         <S.MenuButton src={MenuButtonImage}/>
-        <S.Logo>Notify</S.Logo>
+        <S.Logo>Noter</S.Logo>
         { user ? (
           <S.LogoutButton src={LogoutButtonImage}
             onClick={() => logoutUser()}/>
