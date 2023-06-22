@@ -57,7 +57,6 @@ class UpdateContactSerializer(ModelSerializer):
             'phone',
             'priority_group',
             'created_at',
-            'is_active',
         )
         read_only_fields = (
             'id',
