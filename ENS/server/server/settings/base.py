@@ -42,6 +42,7 @@ LOCAL_APPS = [
     'users',
     'common',
     'contacts',
+    'notifications',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PART_APPS + LOCAL_APPS
