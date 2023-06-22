@@ -90,6 +90,25 @@ class DeleteContactView(DestroyAPIView):
                         status=status.HTTP_204_NO_CONTENT)
 
 
+class UpdateContactView(GenericAPIView):
+    serializer_class = UpdateContactSerializer
+    queryset = Contact.active_objects.all()
+    # permission_classes  = (IsAdminUser,)
+
+    @swagger_auto_schema(operation_id='update_contact')
+    def put(self, request: Request, id: str) -> Response:
+        contact: Contact = self.queryset.filter(id=id).first()
+        if not contact:
+            return Response({'error': ErrorMessages.NO_CONTACT.value},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        serialilizer = self.serializer_class(
+            instance=contact, data=request.data, partial=True)
+        serialilizer.is_valid(raise_exception=True)
+        serialilizer.save()
+        return Response(serialilizer.data, status=status.HTTP_200_OK)
+
+
 class UploadContactsSheetView(APIView):
     parser_classes = (MultiPartParser,)
     serializer_class = None
