@@ -2,17 +2,18 @@ import os
 from enum import Enum
 from django.core.files import File
 from rest_framework import status
-from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.parsers import (
-    FileUploadParser,
     MultiPartParser,
 )
+from rest_framework.views import APIView
 from rest_framework.generics import (
+    GenericAPIView,
     ListAPIView,
     RetrieveAPIView,
     CreateAPIView,
+    DestroyAPIView,
 )
 from rest_framework.permissions import IsAdminUser
 from drf_yasg import openapi
@@ -73,8 +74,25 @@ class CreateContactView(CreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+class DeleteContactView(DestroyAPIView):
+    serializer_class = SimpleContactSerializer
+    queryset = Contact.active_objects.all()
+    lookup_field = 'id'
+    
+    @swagger_auto_schema(operation_id='delete_contact')
+    def delete(self, reuqest: Request, id: str) -> Response:
+        contact: Contact = self.queryset.filter(id=id).first()
+        if not contact:
+            return Response({'error': ErrorMessages.NO_CONTACT.value},
+                            status=status.HTTP_404_NOT_FOUND)
+        contact.soft_delete()
+        return Response({'message': 'Deletion complete!'},
+                        status=status.HTTP_204_NO_CONTENT)
+
+
 class UploadContactsSheetView(APIView):
     parser_classes = (MultiPartParser,)
+    serializer_class = None
 
     @swagger_auto_schema(
         operation_id='upload_sheet',
