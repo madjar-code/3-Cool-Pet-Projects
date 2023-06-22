@@ -19,12 +19,14 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from contacts.models import Contact
 from openpyxl import load_workbook
+from openpyxl.worksheet.worksheet import Worksheet
 from .serializers import (
     SimpleContactSerializer,
     ContactSerializer,
     UpdateContactSerializer,
     CreateContactSerializer,
 )
+
 
 class ErrorMessages(str, Enum):
     NO_USER = 'User with `username` not found'
@@ -96,15 +98,12 @@ class UploadContactsSheetView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         wb = load_workbook(file_object)
-        sheet = wb.active
-
+        sheet: Worksheet = wb.active
         contacts = []
+        errors = []
 
         for row in sheet.iter_rows(min_row=2, values_only=True):
-            name = row[0]
-            email = row[1]
-            phone = row[2]
-            priority_group = row[3]
+            name, email, phone, priority_group = row
 
             contact_data = {
                 'name': name,
@@ -114,8 +113,10 @@ class UploadContactsSheetView(APIView):
             }
 
             serializer = CreateContactSerializer(data=contact_data)
-            serializer.is_valid(raise_exception=True)
-            contact: CreateContactSerializer = serializer.save()
-            contacts.append(contact.data)
+            if serializer.is_valid():
+                serializer.save()
+                contacts.append(serializer.data)
+            else:
+                errors.append(serializer.errors)
 
-        return Response({'contacts': contacts})
+        return Response({'contacts': contacts, 'errors': errors}, status=status.HTTP_200_OK)
