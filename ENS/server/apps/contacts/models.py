@@ -29,6 +29,7 @@ class Contact(BaseModel):
         choices=PriorityChoices.choices,
         default=PriorityChoices.LOW_PRIORITY,
     )
+    objects = models.Manager()
 
     def clean(self) -> Union[None, NoReturn]:
         if not self.email and not self.phone:
