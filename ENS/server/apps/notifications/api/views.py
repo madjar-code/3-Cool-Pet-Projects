@@ -16,6 +16,8 @@ class CreateNTView(CreateAPIView):
     def post(self, request: Request) -> Response:
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(data=serializer.data,
-                        status=status.HTTP_201_CREATED)
+        data = serializer.validated_data
+        data.pop('ignore_typos', None)  # Remove the ignore_typos field
+        instance = serializer.create(data)
+        serializer = self.serializer_class(instance)
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
