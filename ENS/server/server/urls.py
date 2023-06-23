@@ -25,6 +25,7 @@ urlpatterns = [
     # Apps
     path(f'{API_PREFIX}/users/', include('users.api.urls')),
     path(f'{API_PREFIX}/contacts/', include('contacts.api.urls')),
+    path(f'{API_PREFIX}/notifications/', include('notifications.api.urls')),
 
     # Tokens
     path(f'{API_PREFIX}/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
