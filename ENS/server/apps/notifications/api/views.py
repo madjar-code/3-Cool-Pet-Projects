@@ -1,5 +1,7 @@
+from datetime import datetime
 from enum import Enum
-from django.shortcuts import get_object_or_404
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 from rest_framework import status
 from rest_framework.generics import (
     CreateAPIView,
@@ -9,6 +11,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from notifications.models import NotificationTemplate
+from notifications.utils import NotificationTokenGenerator
 from .serializers import (
     NTSerializer,
     CreateNTSerializer,
@@ -45,8 +48,15 @@ class StartNotificationView(GenericAPIView):
     def get(self, request: Request, id: str) -> Response:
         notification_template: NotificationTemplate =\
             self.queryset.filter(id=id).first()
+
         if not notification_template:
             return Response({'error': ErrorMessages.NO_NOTIFICATION_TEMPLATE.value},
                             status=status.HTTP_404_NOT_FOUND,)
+
+        timestamp: float = datetime.now().timestamp()
+        uid = urlsafe_base64_encode(force_bytes(notification_template.id))
+        token = NotificationTokenGenerator().make_token(notification_template, timestamp)
+
         serializer = self.serializer_class(notification_template)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response({'notification': serializer.data,
+                         'uid': uid, 'token': token}, status.HTTP_200_OK)
