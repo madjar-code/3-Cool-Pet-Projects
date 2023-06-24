@@ -1,8 +1,12 @@
 from datetime import datetime
 from enum import Enum
-from django.utils.http import urlsafe_base64_encode
+from django.utils.http import (
+    urlsafe_base64_encode,
+    urlsafe_base64_decode,
+)
 from django.utils.encoding import force_bytes
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.generics import (
     CreateAPIView,
     GenericAPIView,
@@ -37,12 +41,12 @@ class CreateNTView(CreateAPIView):
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
 
-class StartNotificationView(GenericAPIView):
+class SendNotificationTokenView(GenericAPIView):
     serializer_class = NTSerializer
     # permission_classes = (IsAdminUser,)
     queryset = NotificationTemplate.objects.all()
 
-    @swagger_auto_schema(operation_id='start_notification',
+    @swagger_auto_schema(operation_id='notification_token',
                          operation_description=\
                              'Generates notification start token')
     def get(self, request: Request, id: str) -> Response:
@@ -60,3 +64,21 @@ class StartNotificationView(GenericAPIView):
         serializer = self.serializer_class(notification_template)
         return Response({'notification': serializer.data,
                          'uid': uid, 'token': token}, status.HTTP_200_OK)
+
+class StartNotificationView(APIView):
+    # permission_classes = (IsAdminUser,)
+    queryset = NotificationTemplate.objects.all()
+
+    @swagger_auto_schema(operation_id='start_notification',
+                         operation_description=\
+                             'Confirmation of notification')
+    def get(self, request: Request, uid: str, token: str) -> Response:
+        notification_template_id = urlsafe_base64_decode(uid).decode()
+        notification_template: NotificationTemplate =\
+            self.queryset.filter(id=notification_template_id).first()
+
+        if not notification_template:
+            return Response({'error': ErrorMessages.NO_NOTIFICATION_TEMPLATE.value},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'message': 'Начало массовой рассылки'})
