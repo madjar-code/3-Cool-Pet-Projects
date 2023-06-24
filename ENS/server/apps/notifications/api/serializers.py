@@ -9,6 +9,19 @@ from rest_framework.serializers import (
 from notifications.models import NotificationTemplate
 
 
+class NTSerializer(ModelSerializer):
+    class Meta:
+        model = NotificationTemplate
+        fields = (
+            'id',
+            'send_time',
+            'title',
+            'text',
+            'created_at',
+        )
+        read_only_fields = fields
+
+
 class CreateNTSerializer(ModelSerializer):
     ignore_typos = serializers.BooleanField(default=False)
     class Meta:
