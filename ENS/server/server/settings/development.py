@@ -15,6 +15,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100,
 }
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 DATABASES = {
     'default': {
@@ -36,9 +37,7 @@ DATABASES = {
     # },
 }
 
-
 # USE_REPLICA_DATABASE = env('USE_REPLICA_DATABASE')
-
 
 # class ReplicaRouter:
 #     def db_for_read(self, model, **hints):
@@ -67,6 +66,5 @@ DATABASES = {
 
 #     def allow_migrate(self, db, app_label, model_name=None, **hints):
 #         return True
-
 
 # DATABASE_ROUTERS=[ReplicaRouter]

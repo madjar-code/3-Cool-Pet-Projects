@@ -32,6 +32,7 @@ DJANGO_APPS = [
 SITE_ID = 1
 
 THIRD_PART_APPS = [
+    'django_extensions',
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
