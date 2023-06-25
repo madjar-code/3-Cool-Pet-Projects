@@ -12,11 +12,11 @@ class NotificationTemplate(UUIDModel):
 
     created_at = models.DateTimeField(auto_now=True)
 
-    def render_title(self, title_data: Dict[str, str]) -> str:
-        return self.title.format(**title_data)
+    def render_title(self, title_data: Dict[str, str] = None) -> str:
+        return self.title.format(**title_data) if title_data else self.title
 
-    def render_text(self, text_data: Dict[str, str]) -> str:
-        return self.text.format(**text_data)
+    def render_text(self, text_data: Dict[str, str] = None) -> str:
+        return self.text.format(**text_data) if text_data else self.title
 
     def __str__(self) -> str:
         return self.title if self.title else str(self.id)
