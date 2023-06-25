@@ -24,10 +24,10 @@ class NotificationTokenGenerator(PasswordResetTokenGenerator):
 
 def dev_send_email(subject: str, body: str,
                    recipient_list: List[str]) -> None:
+    sleep(2)
     send_mail(
         subject, body, 'admin@admin.com',
         recipient_list, fail_silently=False)
-    sleep(2)
 
 
 def dev_send_email_wrong(subject: str, body: str,
