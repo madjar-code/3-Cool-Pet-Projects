@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import (
     CreateAPIView,
+    ListAPIView,
     GenericAPIView,
 )
 from rest_framework.request import Request
@@ -65,6 +66,17 @@ class SendNotificationTokenView(GenericAPIView):
         return Response({'notification': serializer.data,
                          'uid': uid, 'token': token}, status.HTTP_200_OK)
 
+
+class NTListView(ListAPIView):
+    serializer_class = NTSerializer
+    # permission_classes = (IsAdminUser,)
+    queryset = NotificationTemplate.objects.all()
+
+    @swagger_auto_schema(operation_id='all_contacts')
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+
 class StartNotificationView(APIView):
     # permission_classes = (IsAdminUser,)
     queryset = NotificationTemplate.objects.all()
@@ -81,4 +93,4 @@ class StartNotificationView(APIView):
             return Response({'error': ErrorMessages.NO_NOTIFICATION_TEMPLATE.value},
                             status=status.HTTP_404_NOT_FOUND)
 
-        return Response({'message': 'Начало массовой рассылки'})
+        return Response({'message': 'Mass notification start'})
