@@ -31,6 +31,9 @@ class Contact(BaseModel):
     )
     objects = models.Manager()
 
+    def __str__(self) -> str:
+        return self.name
+
     def clean(self) -> Union[None, NoReturn]:
         if not self.email and not self.phone:
             raise ValidationError(EMPTY_FIELDS_ERROR)
