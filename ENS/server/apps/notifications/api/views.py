@@ -15,8 +15,18 @@ from rest_framework.generics import (
 from rest_framework.request import Request
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
+from contacts.models import Contact
+from reports.models import (
+    MethodChoices,
+    StatusChoices,
+    NotificationState,
+)
 from notifications.models import NotificationTemplate
-from notifications.utils import NotificationTokenGenerator
+from notifications.utils import (
+    NotificationTokenGenerator,
+    dev_send_email,
+    dev_send_email_wrong,
+)
 from .serializers import (
     NTSerializer,
     CreateNTSerializer,
@@ -79,7 +89,6 @@ class NTListView(ListAPIView):
 
 class StartNotificationView(APIView):
     # permission_classes = (IsAdminUser,)
-    queryset = NotificationTemplate.objects.all()
 
     @swagger_auto_schema(operation_id='start_notification',
                          operation_description=\
@@ -87,10 +96,23 @@ class StartNotificationView(APIView):
     def get(self, request: Request, uid: str, token: str) -> Response:
         notification_template_id = urlsafe_base64_decode(uid).decode()
         notification_template: NotificationTemplate =\
-            self.queryset.filter(id=notification_template_id).first()
+            NotificationTemplate.objects.all().\
+            filter(id=notification_template_id).first()
 
         if not notification_template:
             return Response({'error': ErrorMessages.NO_NOTIFICATION_TEMPLATE.value},
                             status=status.HTTP_404_NOT_FOUND)
+
+        for contact in Contact.objects.all():
+            notification_state = NotificationState.objects.create(
+                notification_template=notification_template,
+                contact=contact,
+                status=StatusChoices.STATUS_DIRTY,
+                method=MethodChoices.EMAIL_METHOD,
+            )
+            subject: str = notification_template.render_title()
+            body: str = notification_template.render_text()
+            contact_list: str = [contact.email]
+            dev_send_email(subject, body, contact_list)
 
         return Response({'message': 'Mass notification start'})
