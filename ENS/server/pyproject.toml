@@ -20,6 +20,7 @@ openpyxl = "^3.1.2"
 pyspellchecker = "^0.7.2"
 psycopg2-binary = "^2.9.6"
 django-extensions = "^3.2.3"
+celery = {extras = ["redis"], version = "^5.3.1"}
 
 
 [build-system]
