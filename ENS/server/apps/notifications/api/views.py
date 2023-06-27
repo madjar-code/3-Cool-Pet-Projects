@@ -16,21 +16,13 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from contacts.models import Contact
-from reports.models import (
-    MethodChoices,
-    StatusChoices,
-    NotificationState,
-)
 from notifications.models import NotificationTemplate
-from notifications.utils import (
-    NotificationTokenGenerator,
-    dev_send_email,
-    dev_send_email_wrong,
-)
+from notifications.utils import NotificationTokenGenerator
 from .serializers import (
     NTSerializer,
     CreateNTSerializer,
 )
+from notifications.tasks import send_notification
 
 
 class ErrorMessages(str, Enum):
@@ -103,16 +95,7 @@ class StartNotificationView(APIView):
             return Response({'error': ErrorMessages.NO_NOTIFICATION_TEMPLATE.value},
                             status=status.HTTP_404_NOT_FOUND)
 
-        for contact in Contact.objects.all():
-            notification_state = NotificationState.objects.create(
-                notification_template=notification_template,
-                contact=contact,
-                status=StatusChoices.STATUS_DIRTY,
-                method=MethodChoices.EMAIL_METHOD,
-            )
-            subject: str = notification_template.render_title()
-            body: str = notification_template.render_text()
-            contact_list: str = [contact.email]
-            dev_send_email(subject, body, contact_list)
+        for contact_id in Contact.objects.values_list('id', flat=True):
+            send_notification.apply_async(args=[notification_template_id, contact_id])
 
         return Response({'message': 'Mass notification start'})
