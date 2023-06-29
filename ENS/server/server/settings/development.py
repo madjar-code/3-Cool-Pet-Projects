@@ -17,6 +17,7 @@ REST_FRAMEWORK = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+FLOWER_PORT = 5555
 CELERY_BROKER_URL = env("CELERY_BROKER")
 # CELERY_RESULT_BACKEND = env("CELERY_BACKEND")
 CELERY_TIMEZONE = "Europe/Chisinau"
