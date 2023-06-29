@@ -77,7 +77,6 @@ click-plugins = ">=1.1.1"
 click-repl = ">=0.2.0"
 kombu = ">=5.3.1,<6.0"
 python-dateutil = ">=2.8.2"
-redis = {version = ">=4.5.2,<4.5.5 || >4.5.5", optional = true, markers = "extra == \"redis\""}
 tzdata = ">=2022.7"
 vine = ">=5.0.0,<6.0"
 
@@ -1034,4 +1033,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "6778151f64b93c84ef057beac516f17627e1f04f0d023a791cbd1221655ee935"
+content-hash = "699e5b65c379196ab3e69a92c49a2504ef8f1d20575b232ba1334f4ddff192c3"

@@ -31,6 +31,16 @@ DATABASES = {
         'PORT': env('MASTER_DB_PORT'),
     },
 
+    # Docker Settings
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgres',
+    #     'USER': 'postgres',
+    #     'PASSWORD': 'postgres',
+    #     'NAME': 'postgres',
+    #     'HOST': 'database',
+    #     'PORT': '5433',
+    # },
+
     # 'replica': {
     #     'ENGINE': env('POSTGRES_ENGINE'),
     #     'USER': env('POSTGRES_USER'),
