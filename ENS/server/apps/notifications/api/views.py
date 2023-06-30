@@ -22,7 +22,16 @@ from .serializers import (
     NTSerializer,
     CreateNTSerializer,
 )
-from notifications.tasks import send_notification
+from reports.models import (
+    NotificationState,
+    StatusChoices,
+    MethodChoices,    
+)
+from notifications.utils import (
+    dev_send_email,
+    dev_send_email_wrong,
+)
+# from notifications.tasks import send_notification
 
 
 class ErrorMessages(str, Enum):
@@ -96,6 +105,31 @@ class StartNotificationView(APIView):
                             status=status.HTTP_404_NOT_FOUND)
 
         for contact_id in Contact.objects.values_list('id', flat=True):
-            send_notification.apply_async(args=[notification_template_id, contact_id])
+            notification_template = NotificationTemplate.\
+                objects.filter(id=notification_template_id).first()
+            contact: Contact = Contact.objects.filter(id=contact_id).first()
 
+            notification_state = NotificationState.objects.filter(
+                notification_template=notification_template,contact=contact
+            ).first()
+            
+            if not notification_state:
+                notification_state = NotificationState.objects.create(
+                    notification_template=notification_template,
+                    contact=contact,
+                    status=StatusChoices.STATUS_DIRTY,
+                    method=MethodChoices.EMAIL_METHOD
+                )
+            
+            if notification_state.status == StatusChoices.STATUS_DIRTY:
+                subject: str = notification_template.render_title()
+                body: str = notification_template.render_text()
+                contact_list: str = [contact.email]
+                try:
+                    dev_send_email(subject, body, contact_list)
+                    notification_state.status = StatusChoices.STATUS_READY
+                except Exception as e:
+                    notification_state.status = StatusChoices.STATUS_FAILED
+                notification_state.save()
+        
         return Response({'message': 'Mass notification start'})
