@@ -90,6 +90,14 @@ class NTListView(ListAPIView):
         return super().get(request, *args, **kwargs)
 
 
+def send_notification_by_method(method: MethodChoices, subject: str,
+                                body: str, contact: Contact) -> None:
+    if method == MethodChoices.EMAIL_METHOD:
+        dev_send_email(subject=subject, body=body, recipient_list=[contact.email])
+    elif method == MethodChoices.PHONE_METHOD:
+        dev_send_sms(body=body, phone_number=contact.phone)
+
+
 class StartNotificationView(APIView):
     # permission_classes = (IsAdminUser,)
 
@@ -114,40 +122,28 @@ class StartNotificationView(APIView):
             notification_state = NotificationState.objects.filter(
                 notification_template=notification_template,contact=contact
             ).first()
-            
+            method = notification_state.method
+
             if not notification_state:
-                method = None
                 if contact.email:
                     method = MethodChoices.EMAIL_METHOD
                 elif contact.phone:
                     method = MethodChoices.PHONE_METHOD
- 
+
                 notification_state = NotificationState.objects.create(
                     notification_template=notification_template,
-                    contact=contact,
                     status=StatusChoices.STATUS_DIRTY,
+                    contact=contact,
                     method=method
                 )
-            
             if notification_state.status == StatusChoices.STATUS_DIRTY:
                 subject: str = notification_template.render_title()
                 body: str = notification_template.render_text()
-                if notification_state.method == MethodChoices.EMAIL_METHOD:
-                    contact_list: str = [contact.email]
-                    try:
-                        dev_send_email(subject, body, contact_list)
-                        notification_state.status = StatusChoices.STATUS_READY
-                    except Exception as e:
-                        notification_state.status = StatusChoices.STATUS_FAILED
-                    notification_state.save()
-
-                elif notification_state.method == MethodChoices.PHONE_METHOD:
-                    phone_number: str = contact.phone
-                    try:
-                        dev_send_sms(body, phone_number, subject)
-                        notification_state.status = StatusChoices.STATUS_READY
-                    except Exception as e:
-                        notification_state.status = StatusChoices.STATUS_FAILED
-                    notification_state.save()
+                try:
+                    send_notification_by_method(method, subject, body, contact)
+                    notification_state.status = StatusChoices.STATUS_READY
+                except Exception as e:
+                    notification_state.status = StatusChoices.STATUS_FAILED
+                notification_state.save()
 
         return Response({'message': 'Mass notification start'})
