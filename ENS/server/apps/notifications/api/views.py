@@ -30,6 +30,8 @@ from reports.models import (
 from notifications.utils import (
     dev_send_email,
     dev_send_email_wrong,
+    dev_send_sms,
+    dev_send_sms_wrong,
 )
 # from notifications.tasks import send_notification
 
@@ -114,22 +116,38 @@ class StartNotificationView(APIView):
             ).first()
             
             if not notification_state:
+                method = None
+                if contact.email:
+                    method = MethodChoices.EMAIL_METHOD
+                elif contact.phone:
+                    method = MethodChoices.PHONE_METHOD
+ 
                 notification_state = NotificationState.objects.create(
                     notification_template=notification_template,
                     contact=contact,
                     status=StatusChoices.STATUS_DIRTY,
-                    method=MethodChoices.EMAIL_METHOD
+                    method=method
                 )
             
             if notification_state.status == StatusChoices.STATUS_DIRTY:
                 subject: str = notification_template.render_title()
                 body: str = notification_template.render_text()
-                contact_list: str = [contact.email]
-                try:
-                    dev_send_email(subject, body, contact_list)
-                    notification_state.status = StatusChoices.STATUS_READY
-                except Exception as e:
-                    notification_state.status = StatusChoices.STATUS_FAILED
-                notification_state.save()
-        
+                if notification_state.method == MethodChoices.EMAIL_METHOD:
+                    contact_list: str = [contact.email]
+                    try:
+                        dev_send_email(subject, body, contact_list)
+                        notification_state.status = StatusChoices.STATUS_READY
+                    except Exception as e:
+                        notification_state.status = StatusChoices.STATUS_FAILED
+                    notification_state.save()
+
+                elif notification_state.method == MethodChoices.PHONE_METHOD:
+                    phone_number: str = contact.phone
+                    try:
+                        dev_send_sms(body, phone_number, subject)
+                        notification_state.status = StatusChoices.STATUS_READY
+                    except Exception as e:
+                        notification_state.status = StatusChoices.STATUS_FAILED
+                    notification_state.save()
+
         return Response({'message': 'Mass notification start'})
