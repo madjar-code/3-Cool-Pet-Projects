@@ -87,7 +87,7 @@ class StartNotificationView(APIView):
     @swagger_auto_schema(operation_id='start_notification',
                          operation_description=\
                              'Confirmation of notification')
-    def get(self, request: Request, uid: str, token: str) -> Response:
+    def get(self, request: Request, uid: str, token: str, session_name: str) -> Response:
         notification_template_id = urlsafe_base64_decode(uid).decode()
         notification_template: NotificationTemplate =\
             NotificationTemplate.objects.all().\
@@ -97,7 +97,6 @@ class StartNotificationView(APIView):
             return Response({'error': ErrorMessages.NO_NOTIFICATION_TEMPLATE.value},
                             status=status.HTTP_404_NOT_FOUND)
 
-        session_name = _generate_code()
         notification_session = NotificationSession.objects.create(
             name=session_name,
             notification_template=notification_template,
@@ -113,4 +112,7 @@ class StartNotificationView(APIView):
                 send_notification.apply_async(args=[session_id, contact_id],
                                               kwargs={'priority_group': 'Low'},
                                               queue='low_priority_queue')
-        return Response({'message': 'Mass notification start'})
+        return Response({'message': 'Notification session started',
+                         'session': {'id': session_id,
+                                     'name': session_name}},
+                        status=status.HTTP_200_OK)
