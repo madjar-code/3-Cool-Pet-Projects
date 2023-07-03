@@ -15,7 +15,7 @@ from rest_framework.generics import (
 from rest_framework.request import Request
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
-from contacts.models import Contact
+from contacts.models import Contact, PriorityChoices
 from notifications.models import NotificationTemplate
 from notifications.utils import NotificationTokenGenerator
 from .serializers import (
@@ -95,9 +95,17 @@ class StartNotificationView(APIView):
             return Response({'error': ErrorMessages.NO_NOTIFICATION_TEMPLATE.value},
                             status=status.HTTP_404_NOT_FOUND)
 
-        for contact_id in Contact.objects.values_list('id', flat=True):
+        for contact_id, priority_group in Contact.objects.values_list('id', 'priority_group'):
             notification_template = NotificationTemplate.\
                 objects.filter(id=notification_template_id).first()
-            send_notification.delay(notification_template_id, contact_id)
+            if priority_group == 'High':
+                send_notification.apply_async(args=[notification_template_id, contact_id],
+                                              kwargs={'priority_group': 'High'},
+                                              queue='high_priority_queue')
+            else:
+                send_notification.apply_async(args=[notification_template_id, contact_id],
+                                              kwargs={'priority_group': 'Low'},
+                                              queue='low_priority_queue')
+            # send_notification.delay(notification_template_id, contact_id)
 
         return Response({'message': 'Mass notification start'})
