@@ -33,9 +33,6 @@ class NotificationState(UUIDModel, TimeStampModel):
     contact = models.ForeignKey(
         to=Contact, on_delete=models.CASCADE,
         related_name='states')
-    # notification_template = models.ForeignKey(
-    #     to=NotificationTemplate, on_delete=models.CASCADE,
-    #     related_name='states')
     notification_session = models.ForeignKey(
         to=NotificationSession, on_delete=models.CASCADE,
         related_name='states', blank=True, null=True)
