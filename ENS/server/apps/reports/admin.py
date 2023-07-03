@@ -1,14 +1,36 @@
 from django.contrib import admin
 from common.mixins.admin import ReadOnlyFieldsAdmin
-from .models import NotificationState
+from .models import (
+    NotificationSession,
+    NotificationState,
+)
 
+
+@admin.register(NotificationSession)
+class NotificationSessionAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'name',
+        'notification_template',
+    )
+    list_filter = (
+        'name',
+    )
+    search_fields = (
+        'notification_template__tile',
+    )
+    list_display_links = (
+        'id',
+        'name',
+    )
+    
 
 @admin.register(NotificationState)
 class NotificationStateAdmin(ReadOnlyFieldsAdmin):
     list_display = (
         'short_id',
         'contact',
-        'notification_template',
+        'notification_session',
         'status',
         'method',
         'created_at',
@@ -20,7 +42,7 @@ class NotificationStateAdmin(ReadOnlyFieldsAdmin):
     )
     search_fields = (
         'contact__name',
-        'notification_template__title',
+        'notification_session__name',
         'status',
         'method',
     )
