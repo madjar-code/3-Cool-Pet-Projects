@@ -22,18 +22,7 @@ from .serializers import (
     NTSerializer,
     CreateNTSerializer,
 )
-from reports.models import (
-    NotificationState,
-    StatusChoices,
-    MethodChoices,    
-)
-from notifications.utils import (
-    dev_send_email,
-    dev_send_email_wrong,
-    dev_send_sms,
-    dev_send_sms_wrong,
-)
-# from notifications.tasks import send_notification
+from notifications.tasks import send_notification
 
 
 class ErrorMessages(str, Enum):
@@ -90,14 +79,6 @@ class NTListView(ListAPIView):
         return super().get(request, *args, **kwargs)
 
 
-def send_notification_by_method(method: MethodChoices, subject: str,
-                                body: str, contact: Contact) -> None:
-    if method == MethodChoices.EMAIL_METHOD:
-        dev_send_email(subject=subject, body=body, recipient_list=[contact.email])
-    elif method == MethodChoices.PHONE_METHOD:
-        dev_send_sms(body=body, phone_number=contact.phone)
-
-
 class StartNotificationView(APIView):
     # permission_classes = (IsAdminUser,)
 
@@ -117,33 +98,6 @@ class StartNotificationView(APIView):
         for contact_id in Contact.objects.values_list('id', flat=True):
             notification_template = NotificationTemplate.\
                 objects.filter(id=notification_template_id).first()
-            contact: Contact = Contact.objects.filter(id=contact_id).first()
-
-            notification_state = NotificationState.objects.filter(
-                notification_template=notification_template,contact=contact
-            ).first()
-            method = notification_state.method
-
-            if not notification_state:
-                if contact.email:
-                    method = MethodChoices.EMAIL_METHOD
-                elif contact.phone:
-                    method = MethodChoices.PHONE_METHOD
-
-                notification_state = NotificationState.objects.create(
-                    notification_template=notification_template,
-                    status=StatusChoices.STATUS_DIRTY,
-                    contact=contact,
-                    method=method
-                )
-            if notification_state.status == StatusChoices.STATUS_DIRTY:
-                subject: str = notification_template.render_title()
-                body: str = notification_template.render_text()
-                try:
-                    send_notification_by_method(method, subject, body, contact)
-                    notification_state.status = StatusChoices.STATUS_READY
-                except Exception as e:
-                    notification_state.status = StatusChoices.STATUS_FAILED
-                notification_state.save()
+            send_notification.delay(notification_template_id, contact_id)
 
         return Response({'message': 'Mass notification start'})
