@@ -1,15 +1,14 @@
 from celery import shared_task
-from contacts.models import Contact
+from contacts.models import (
+    Contact,
+    PriorityChoices,
+)
+from notifications.models import\
+    NotificationTemplate
 from reports.models import (
     MethodChoices,
     StatusChoices,
     NotificationState,
-)
-from notifications.models import NotificationTemplate
-from reports.models import (
-    NotificationState,
-    StatusChoices,
-    MethodChoices,    
 )
 from smtplib import SMTPException
 from twilio.base.exceptions import TwilioException
@@ -29,7 +28,8 @@ def send_notification_by_method(method: MethodChoices, subject: str,
 
 @shared_task(time_limit=20)
 def send_notification(notification_template_id: str,
-                      contact_id: str) -> None:
+                      contact_id: str,
+                      priority_group: PriorityChoices) -> None:
     notification_template = NotificationTemplate.\
                 objects.filter(id=notification_template_id).first()
     contact: Contact = Contact.objects.filter(id=contact_id).first()
