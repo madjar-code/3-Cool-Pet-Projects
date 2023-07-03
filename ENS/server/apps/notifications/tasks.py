@@ -9,6 +9,7 @@ from reports.models import (
     MethodChoices,
     StatusChoices,
     NotificationState,
+    NotificationSession,
 )
 from smtplib import SMTPException
 from twilio.base.exceptions import TwilioException
@@ -27,14 +28,14 @@ def send_notification_by_method(method: MethodChoices, subject: str,
 
 
 @shared_task(time_limit=20)
-def send_notification(notification_template_id: str,
+def send_notification(session_id: str,
                       contact_id: str,
                       priority_group: PriorityChoices) -> None:
-    notification_template = NotificationTemplate.\
-                objects.filter(id=notification_template_id).first()
+    notification_session = NotificationSession.\
+                objects.filter(id=session_id).first()
     contact: Contact = Contact.objects.filter(id=contact_id).first()
     notification_state = NotificationState.objects.filter(
-        notification_template=notification_template,contact=contact
+        notification_session=notification_session, contact=contact
     ).first()
 
     if not notification_state:
@@ -44,7 +45,7 @@ def send_notification(notification_template_id: str,
             method = MethodChoices.PHONE_METHOD
 
         notification_state = NotificationState.objects.create(
-            notification_template=notification_template,
+            notification_session=notification_session,
             status=StatusChoices.STATUS_DIRTY,
             contact=contact,
             method=method
@@ -52,9 +53,10 @@ def send_notification(notification_template_id: str,
 
     method = notification_state.method
 
+    template = notification_session.notification_template
     if notification_state.status == StatusChoices.STATUS_DIRTY:
-        subject: str = notification_template.render_title()
-        body: str = notification_template.render_text()
+        subject: str = template.render_title()
+        body: str = template.render_text()
         try:
             send_notification_by_method(method, subject, body, contact)
             notification_state.status = StatusChoices.STATUS_READY
@@ -62,4 +64,4 @@ def send_notification(notification_template_id: str,
             notification_state.status = StatusChoices.STATUS_FAILED
         notification_state.save()
 
-    # print(f"Задача send_notification выполнена для contact_id: {contact_id}")
+    print(f"Задача send_notification выполнена для contact_id: {contact_id}")
