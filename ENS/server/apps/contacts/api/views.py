@@ -1,5 +1,7 @@
 import os
 from enum import Enum
+from openpyxl import load_workbook
+from openpyxl.worksheet.worksheet import Worksheet
 from django.core.files import File
 from rest_framework import status
 from rest_framework.request import Request
@@ -15,12 +17,13 @@ from rest_framework.generics import (
     CreateAPIView,
     DestroyAPIView,
 )
-from rest_framework.permissions import IsAdminUser
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from reports.models import (
+    NotificationState,
+    StateStatusChoices,
+)
 from contacts.models import Contact
-from openpyxl import load_workbook
-from openpyxl.worksheet.worksheet import Worksheet
 from .serializers import (
     SimpleContactSerializer,
     ContactSerializer,
@@ -58,8 +61,17 @@ class ContactDetailsView(RetrieveAPIView):
         if not contact:
             return Response({'error': ErrorMessages.NO_CONTACT.value},
                             status=status.HTTP_404_NOT_FOUND,)
+        contact_notif_states = NotificationState.objects.filter(contact=contact)
+        success_counter = contact_notif_states.filter(
+            status=StateStatusChoices.STATUS_READY).count()
+        failed_counter = contact_notif_states.filter(
+            status=StateStatusChoices.STATUS_FAILED).count()
+
         serializer = self.serializer_class(instance=contact)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response({'contact': serializer.data,
+                         'notifications': {'success': success_counter,
+                                           'failed': failed_counter}},
+                        status.HTTP_200_OK)
 
 
 class CreateContactView(CreateAPIView):
