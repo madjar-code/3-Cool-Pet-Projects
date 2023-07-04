@@ -9,5 +9,6 @@ class SimpleNSSerializer(ModelSerializer):
         fields = (
             'id',
             'name',
+            'status',
         )
         read_only_fields = fields
