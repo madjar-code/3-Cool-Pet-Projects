@@ -15,7 +15,6 @@ from rest_framework.generics import (
 from rest_framework.request import Request
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
-from common.utils import _generate_code
 from contacts.models import Contact
 from notifications.models import NotificationTemplate
 from reports.models import NotificationSession
@@ -102,15 +101,16 @@ class StartNotificationView(APIView):
             notification_template=notification_template,
         )
         session_id = notification_session.id
+        
+        notification_session.all_counter = Contact.objects.exclude(priority_group='Blacklist').count()
+        notification_session.save()
 
         for contact_id, priority_group in Contact.objects.values_list('id', 'priority_group'):
             if priority_group == 'High':
                 send_notification.apply_async(args=[session_id, contact_id],
-                                              kwargs={'priority_group': 'High'},
                                               queue='high_priority_queue')
-            else:
+            elif priority_group == 'Low':
                 send_notification.apply_async(args=[session_id, contact_id],
-                                              kwargs={'priority_group': 'Low'},
                                               queue='low_priority_queue')
         return Response({'message': 'Notification session started',
                          'session': {'id': session_id,
