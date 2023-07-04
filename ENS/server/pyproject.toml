@@ -20,7 +20,7 @@ openpyxl = "3.1.2"
 pyspellchecker = "0.7.2"
 psycopg2-binary = "2.9.6"
 django-extensions = "3.2.3"
-celery = "5.3.1"
+celery = {extras = ["autoreload"], version = "^5.3.1"}
 amqp = "5.1.1"
 asgiref = "3.7.2"
 async-timeout = "4.0.2"
