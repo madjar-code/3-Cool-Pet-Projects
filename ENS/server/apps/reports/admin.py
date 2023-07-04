@@ -11,13 +11,25 @@ class NotificationSessionAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'name',
+        'success_counter',
+        'during_counter',
+        'failed_counter',
+        'all_counter',
+        'status',
         'notification_template',
+    )
+    readonly_fields = (
+        'success_counter',
+        'during_counter',
+        'failed_counter',
+        'all_counter',
     )
     list_filter = (
         'name',
+        'status',
     )
     search_fields = (
-        'notification_template__tile',
+        'notification_template__title',
     )
     list_display_links = (
         'id',
