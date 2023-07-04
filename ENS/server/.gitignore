@@ -129,3 +129,5 @@ ipython_config.py
 
 # Excel Table
 contacts.xlsx
+
+/*.json
