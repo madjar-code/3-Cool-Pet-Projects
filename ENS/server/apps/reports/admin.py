@@ -16,6 +16,7 @@ class NotificationSessionAdmin(admin.ModelAdmin):
         'failed_counter',
         'all_counter',
         'status',
+        'created_at',
         'notification_template',
     )
     readonly_fields = (
@@ -23,6 +24,7 @@ class NotificationSessionAdmin(admin.ModelAdmin):
         'during_counter',
         'failed_counter',
         'all_counter',
+        'created_at',
     )
     list_filter = (
         'name',

@@ -26,6 +26,9 @@ class NotificationSession(UUIDModel):
     during_counter = models.PositiveIntegerField(default=0)
     failed_counter = models.PositiveIntegerField(default=0)
     all_counter = models.PositiveIntegerField(default=0)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    
 
     def __str__(self) -> str:
         return self.name
