@@ -7,17 +7,31 @@ from contacts.models import Contact
 from notifications.models import NotificationTemplate
 
 
+class SessionStatusChoices(models.TextChoices):
+    STATUS_DIRTY = 'DIRTY', 'DIRTY'
+    STATUS_DURING = 'DURING', 'DURING'
+    STATUS_READY = 'READY', 'READY'
+
+
 class NotificationSession(UUIDModel):
     name = models.CharField(max_length=255)
     notification_template = models.ForeignKey(
         to=NotificationTemplate, on_delete=models.CASCADE,
         related_name='sessions')
+    status = models.CharField(
+        max_length=10, choices=SessionStatusChoices.choices,
+        default=SessionStatusChoices.STATUS_DIRTY)
+
+    success_counter = models.PositiveIntegerField(default=0)
+    during_counter = models.PositiveIntegerField(default=0)
+    failed_counter = models.PositiveIntegerField(default=0)
+    all_counter = models.PositiveIntegerField(default=0)
 
     def __str__(self) -> str:
         return self.name
 
 
-class StatusChoices(models.TextChoices):
+class StateStatusChoices(models.TextChoices):
     STATUS_DIRTY = 'DIRTY', 'DIRTY'
     STATUS_DURING = 'DURING', 'DURING'
     STATUS_READY = 'READY', 'READY'
@@ -37,8 +51,8 @@ class NotificationState(UUIDModel, TimeStampModel):
         to=NotificationSession, on_delete=models.CASCADE,
         related_name='states', blank=True, null=True)
     status = models.CharField(
-        max_length=10, choices=StatusChoices.choices,
-        default=StatusChoices.STATUS_DIRTY)
+        max_length=10, choices=StateStatusChoices.choices,
+        default=StateStatusChoices.STATUS_DIRTY)
     method = models.CharField(
         max_length=10, choices=MethodChoices.choices)
 
