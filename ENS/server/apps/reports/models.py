@@ -28,7 +28,8 @@ class NotificationSession(UUIDModel):
     all_counter = models.PositiveIntegerField(default=0)
     
     created_at = models.DateTimeField(auto_now_add=True)
-    
+    report_file = models.FileField(
+        upload_to='reports/', blank=True, null=True)
 
     def __str__(self) -> str:
         return self.name
