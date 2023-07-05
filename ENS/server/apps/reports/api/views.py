@@ -1,3 +1,4 @@
+from uuid import UUID
 from enum import Enum
 from rest_framework import status
 from rest_framework.generics import (
@@ -11,6 +12,7 @@ from reports.models import NotificationSession
 from reports.tasks import create_report
 from .serializers import (
     SimpleNSsessionSerializer,
+    NSessionDetailsSerializer,
     ReportNSSerializer,
 )
 
@@ -24,11 +26,30 @@ class NSessionListView(ListAPIView):
     serializer_class = SimpleNSsessionSerializer
     queryset = NotificationSession.objects.all()
 
-    @swagger_auto_schema(operation_id='all sessions',
+    @swagger_auto_schema(operation_id='all_sessions',
                         operation_description=\
                             'Get all sessions in list')
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+
+
+class NSessionDetailsView(RetrieveAPIView):
+    # permission_classes = (IsADminUser,)
+    serializer_class = NSessionDetailsSerializer
+    queryset = NotificationSession.objects.all()
+    lookup_field = 'id'
+
+    @swagger_auto_schema(operation_id='session_details',
+                         operation_description=\
+                            'Get statistic about a session')
+    def get(self, request: Request, id: UUID) -> Response:
+        session: NotificationSession = self.queryset.filter(id=id).first()
+        if not session:
+            return Response({'error': ErrorMessages.NO_SESSION.value},
+                            status=status.HTTP_404_NOT_FOUND,)
+        serializer = self.serializer_class(session)
+        return Response(data=serializer.data,
+                        status=status.HTTP_200_OK)
 
 
 class CreateNSessionReport(RetrieveAPIView):
