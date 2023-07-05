@@ -60,6 +60,7 @@ wcwidth = "0.2.6"
 flower = "^2.0.0"
 twilio = "^8.4.0"
 eventlet = "^0.33.3"
+gevent = "^22.10.2"
 
 
 [build-system]
