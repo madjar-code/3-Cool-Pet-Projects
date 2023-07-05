@@ -2,6 +2,10 @@ import os
 from enum import Enum
 from openpyxl import load_workbook
 from openpyxl.worksheet.worksheet import Worksheet
+from typing import (
+    List,
+    Dict,
+)
 from django.core.files import File
 from rest_framework import status
 from rest_framework.request import Request
@@ -85,6 +89,65 @@ class CreateContactView(CreateAPIView):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+
+class CreateMultiContactsView(CreateAPIView):
+    serializer_class = CreateContactSerializer
+    # permission_classes = (IsAdminUser,)
+
+    @swagger_auto_schema(
+        operation_id='create_multiply_contacts',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_ARRAY,
+            items=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    field: openapi.Schema(type=openapi.TYPE_STRING)
+                    for field in serializer_class().fields.keys()
+                }
+            ),
+            example=[
+                {
+                    'name': 'John',
+                    'email': 'john@example.com',
+                    'phone': '+12125552368',
+                    'priority_group': 'Low',
+                },
+            ]
+        )
+    )
+    def post(self, request: Request) -> Response:
+        contacts = []
+        errors = []
+
+        for id, contact_data in enumerate(request.data):
+            serializer = CreateContactSerializer(data=contact_data)
+            if serializer.is_valid():
+                if not self.check_email_in_request(id, contact_data, contacts):
+                    errors.append({
+                        'id': id,
+                        'errors': [
+                            {'email': ['This email is already in the request']}
+                            ]
+                        })
+                contacts.append(serializer.data)
+            else:
+                errors.append({'id': id, 'errors': serializer.errors})
+        if errors:
+            return Response({'correct_contacts': contacts, 'errors': errors},
+                            status=status.HTTP_400_BAD_REQUEST)
+        serializer = CreateContactSerializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'contacts': contacts},
+                        status=status.HTTP_201_CREATED)
+
+    def check_email_in_request(self, id: int, contact_data: Dict,
+                               contacts: List[Dict]) -> bool:
+        checked_email: str = contact_data['email']
+        for previous_contact in contacts[:id]:
+            if previous_contact['email'] == checked_email:
+                return False
+        return True
 
 class DeleteContactView(DestroyAPIView):
     serializer_class = SimpleContactSerializer
