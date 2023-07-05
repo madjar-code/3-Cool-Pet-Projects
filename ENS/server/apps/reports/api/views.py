@@ -1,6 +1,3 @@
-import json
-from typing import Any
-from uuid import UUID
 from enum import Enum
 from rest_framework import status
 from rest_framework.generics import (
@@ -9,8 +6,9 @@ from rest_framework.generics import (
 )
 from rest_framework.request import Request
 from rest_framework.response import Response
-from reports.models import NotificationSession
 from drf_yasg.utils import swagger_auto_schema
+from reports.models import NotificationSession
+from reports.tasks import create_report
 from .serializers import (
     SimpleNSsessionSerializer,
     ReportNSSerializer,
@@ -33,13 +31,6 @@ class NSessionListView(ListAPIView):
         return super().get(request, *args, **kwargs)
 
 
-class UUIDEncoder(json.JSONEncoder):
-    def default(self, object: Any):
-        if isinstance(object, UUID):
-            return str(object)
-        return super().default(object)
-
-
 class CreateNSessionReport(RetrieveAPIView):
     # permission_classes = (IsAdminUser,)
     serializer_class = ReportNSSerializer
@@ -52,11 +43,7 @@ class CreateNSessionReport(RetrieveAPIView):
         if not session:
             return Response({'error': ErrorMessages.NO_SESSION.value},
                             status=status.HTTP_404_NOT_FOUND,)
-        serializer = self.serializer_class(instance=session,
-                                           context={'request': request})
+        create_report.apply_async(args=[session.id])        
 
-        filename = 'session_report.json'
-        with open(filename, 'w') as report_file:
-            json.dump(serializer.data, report_file, cls=UUIDEncoder, indent=2)
-
-        return Response(serializer.data, status.HTTP_200_OK)
+        return Response({'message': 'The report is generated!'},
+                        status.HTTP_200_OK)
