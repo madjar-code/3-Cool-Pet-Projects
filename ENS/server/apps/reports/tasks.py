@@ -16,7 +16,7 @@ class UUIDEncoder(json.JSONEncoder):
         return super().default(object)
 
 
-@shared_task(queue='low_priority_queue')
+@shared_task(queue='default')
 def create_report(session_id: UUID) -> None:
     session = NotificationSession.objects.filter(id=session_id).first()
     serializer = ReportNSSerializer(instance=session)
