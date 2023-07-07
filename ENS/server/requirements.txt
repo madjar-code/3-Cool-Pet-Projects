@@ -11,7 +11,7 @@ openpyxl==3.1.2
 pyspellchecker==0.7.2
 psycopg2-binary==2.9.6
 django-extensions==3.2.3
-celery==5.3.1
+celery[autoreload]==5.3.1
 amqp==5.1.1
 asgiref==3.7.2
 async-timeout==4.0.2
@@ -48,3 +48,7 @@ uritemplate==4.1.1
 urllib3==2.0.3
 vine==5.0.0
 wcwidth==0.2.6
+flower==2.0.0
+twilio==8.4.0
+eventlet==0.33.3
+gevent==22.10.2
