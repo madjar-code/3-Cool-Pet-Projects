@@ -79,3 +79,16 @@ class UpdateContactSerializer(ModelSerializer):
             'id',
             'created_at',
         )
+
+    def validate(self, attrs: Dict[str, Any]) -> Dict[str, Any]:
+        if 'phone' in attrs and not attrs['phone']:
+            if not self.instance.email:
+                raise ValidationError(ErrorMessages.NO_PHONE_AND_EMAIL.value)
+        if 'email' in attrs and not attrs['email']:
+            if not self.instance.phone:
+                raise ValidationError(ErrorMessages.NO_PHONE_AND_EMAIL.value)
+
+        if 'phone' in attrs and 'email' in attrs:
+            if not attrs['phone'] and not attrs['email']:
+                raise ValidationError(ErrorMessages.NO_PHONE_AND_EMAIL.value)
+        return attrs
