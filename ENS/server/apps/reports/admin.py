@@ -16,6 +16,7 @@ class NotificationSessionAdmin(admin.ModelAdmin):
         'failed_counter',
         'all_counter',
         'status',
+        'scheduled_time',
         'created_at',
         'notification_template',
     )

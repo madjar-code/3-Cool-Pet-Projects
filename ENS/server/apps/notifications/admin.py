@@ -8,7 +8,7 @@ class NotificationTemplateAdmin(admin.ModelAdmin):
         'id',
         'title',
         'text',
-        'send_time',
+        'created_at',
     )
     list_filter = (
         'created_at',
@@ -16,7 +16,6 @@ class NotificationTemplateAdmin(admin.ModelAdmin):
     search_fields = (
         'title',
         'text',
-        'send_time',
     )
     list_display_links = (
         'id',
