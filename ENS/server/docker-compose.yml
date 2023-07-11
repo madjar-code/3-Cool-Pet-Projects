@@ -1,5 +1,3 @@
-# Needs to change .env file on container
-
 version: '3.8'
 services:
   api:
@@ -45,6 +43,19 @@ services:
     env_file:
       - server/.env
     container_name: low_priority_worker
+
+  high_priority_worker:
+    build:
+      context: .
+    hostname: worker
+    entrypoint: celery
+    command: -A server worker -Q high_priority_queue --loglevel=info -P gevent
+    depends_on:
+      - redis
+      - db
+    env_file:
+      - server/.env
+    container_name: high_priority_worker
 
   flower:
     build:
