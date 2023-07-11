@@ -27,6 +27,8 @@ class NotificationSession(UUIDModel):
     failed_counter = models.PositiveIntegerField(default=0)
     all_counter = models.PositiveIntegerField(default=0)
     
+    scheduled_time = models.DateTimeField(null=True, blank=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     report_file = models.FileField(
         upload_to='reports/', blank=True, null=True)
