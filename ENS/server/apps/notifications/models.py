@@ -6,7 +6,6 @@ from common.mixins.models import (
 
 
 class NotificationTemplate(UUIDModel):
-    send_time = models.DateTimeField(null=True, blank=True)
     title = models.CharField(max_length=255, blank=True)
     text = models.TextField()
 
