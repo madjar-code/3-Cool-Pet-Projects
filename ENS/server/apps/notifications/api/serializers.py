@@ -14,7 +14,6 @@ class NTSerializer(ModelSerializer):
         model = NotificationTemplate
         fields = (
             'id',
-            'send_time',
             'title',
             'text',
             'created_at',
@@ -28,7 +27,6 @@ class CreateNTSerializer(ModelSerializer):
         model = NotificationTemplate
         fields = (
             'id',
-            'send_time',
             'title',
             'text',
             'created_at',

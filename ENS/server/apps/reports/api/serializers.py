@@ -30,6 +30,7 @@ class ReportNSSerializer(ModelSerializer):
             'during_counter',
             'failed_counter',
             'all_counter',
+            'scheduled_time',
             'created_at',
             'notification_template',
             'states',
@@ -49,6 +50,7 @@ class NSessionDetailsSerializer(ModelSerializer):
             'during_counter',
             'failed_counter',
             'all_counter',
+            'scheduled_time',
             'created_at',
             'notification_template',
         )
@@ -62,5 +64,6 @@ class SimpleNSsessionSerializer(ModelSerializer):
             'id',
             'name',
             'status',
+            'scheduled_time',
         )
-        read_only_fields = fields
+        read_only_fields = ('status',)
