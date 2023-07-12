@@ -61,6 +61,7 @@ flower = "^2.0.0"
 twilio = "^8.4.0"
 eventlet = "^0.33.3"
 gevent = "^22.10.2"
+django-celery-beat = "^2.5.0"
 
 
 [build-system]

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from uuid import UUID
 from django.utils.http import (
@@ -20,6 +20,7 @@ from drf_yasg.utils import swagger_auto_schema
 from contacts.models import Contact
 from notifications.models import NotificationTemplate
 from reports.models import NotificationSession
+from reports.api.serializers import SimpleNSsessionSerializer
 from notifications.utils import NotificationTokenGenerator
 from .serializers import (
     NTSerializer,
@@ -83,13 +84,14 @@ class NTListView(ListAPIView):
         return super().get(request, *args, **kwargs)
 
 
-class StartNotificationView(APIView):
+class StartNotificationView(GenericAPIView):
     # permission_classes = (IsAdminUser,)
+    serializer_class = SimpleNSsessionSerializer
 
     @swagger_auto_schema(operation_id='start_notification',
                          operation_description=\
                              'Start of notification')
-    def get(self, request: Request, uid: str, token: str, session_name: str) -> Response:
+    def post(self, request: Request, uid: str, token: str) -> Response:
         notification_template_id = urlsafe_base64_decode(uid).decode()
         notification_template: NotificationTemplate =\
             NotificationTemplate.objects.all().\
@@ -99,8 +101,16 @@ class StartNotificationView(APIView):
             return Response({'error': ErrorMessages.NO_NOTIFICATION_TEMPLATE.value},
                             status=status.HTTP_404_NOT_FOUND)
 
+        session_serializer: SimpleNSsessionSerializer =\
+            self.serializer_class(data=request.data)
+        session_serializer.is_valid(raise_exception=True)
+
+        session_name = session_serializer.data['name']
+        scheduled_time = session_serializer.data['scheduled_time']
+
         notification_session = NotificationSession.objects.create(
             name=session_name,
+            scheduled_time=scheduled_time,
             notification_template=notification_template,
         )
         session_id = notification_session.id
@@ -109,12 +119,12 @@ class StartNotificationView(APIView):
         notification_session.save()
 
         for contact_id, priority_group in Contact.objects.values_list('id', 'priority_group'):
-            if priority_group == 'High':
-                send_notification.apply_async(args=[session_id, contact_id],
-                                              queue='high_priority_queue')
-            elif priority_group == 'Low':
-                send_notification.apply_async(args=[session_id, contact_id],
-                                              queue='low_priority_queue')
+            if priority_group in ('High', 'Low'):
+                send_notification.apply_async(
+                    args=[session_id, contact_id],
+                    queue=f'{priority_group.lower()}_priority_queue',
+                    countdown=10,
+                )
         return Response({'message': 'Notification session started',
                          'session': {'id': session_id,
                                      'name': session_name}},
