@@ -1,3 +1,4 @@
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from notifications.api.serializers import NTSerializer
 from reports.models import (
@@ -67,3 +68,15 @@ class SimpleNSsessionSerializer(ModelSerializer):
             'scheduled_time',
         )
         read_only_fields = ('status',)
+
+
+class CustomNSessionSerializer(ModelSerializer):
+    name = serializers.CharField(min_length=1, max_length=255)
+    scheduled_time = serializers.CharField(required=False)
+
+    class Meta:
+        model = NotificationSession
+        fields = (
+            'name',
+            'scheduled_time',
+        )

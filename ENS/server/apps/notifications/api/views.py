@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from enum import Enum
 from uuid import UUID
 from django.utils.http import (
@@ -16,11 +16,12 @@ from rest_framework.generics import (
 from rest_framework.serializers import ValidationError
 from rest_framework.request import Request
 from rest_framework.response import Response
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from contacts.models import Contact
 from notifications.models import NotificationTemplate
 from reports.models import NotificationSession
-from reports.api.serializers import SimpleNSsessionSerializer
+from reports.api.serializers import CustomNSessionSerializer
 from notifications.utils import NotificationTokenGenerator
 from .serializers import (
     NTSerializer,
@@ -32,6 +33,7 @@ from notifications.tasks import send_notification
 class ErrorMessages(str, Enum):
     NO_NOTIFICATION_TEMPLATE = 'Notification template with given `id` not found'
     NO_NOTIFICATION_SESSION = 'Notification session with given `id` not found'
+    INCORRECT_SCHEDULED_TIME = 'Incorrect scheduled time'
 
 
 class CreateNTView(CreateAPIView):
@@ -86,11 +88,23 @@ class NTListView(ListAPIView):
 
 class StartNotificationView(GenericAPIView):
     # permission_classes = (IsAdminUser,)
-    serializer_class = SimpleNSsessionSerializer
+    serializer_class = CustomNSessionSerializer
 
-    @swagger_auto_schema(operation_id='start_notification',
-                         operation_description=\
-                             'Start of notification')
+    @swagger_auto_schema(
+        operation_id='start_notification',
+        operation_description='Start of notification',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'name': openapi.Schema(type=openapi.TYPE_STRING),
+                'scheduled_time': openapi.Schema(type=openapi.TYPE_STRING),
+            },
+            example={
+                'name': 'Session',
+                'scheduled_time': '2023-07-13 09:17:00',
+            },
+        )
+    )
     def post(self, request: Request, uid: str, token: str) -> Response:
         notification_template_id = urlsafe_base64_decode(uid).decode()
         notification_template: NotificationTemplate =\
@@ -101,16 +115,18 @@ class StartNotificationView(GenericAPIView):
             return Response({'error': ErrorMessages.NO_NOTIFICATION_TEMPLATE.value},
                             status=status.HTTP_404_NOT_FOUND)
 
-        session_serializer: SimpleNSsessionSerializer =\
+        session_serializer: CustomNSessionSerializer =\
             self.serializer_class(data=request.data)
         session_serializer.is_valid(raise_exception=True)
-
         session_name = session_serializer.data['name']
         scheduled_time = session_serializer.data['scheduled_time']
-
+        
+        scheduled_time_object = datetime.strptime(scheduled_time, '%Y-%m-%d %H:%M:%S')
+        timedelta = scheduled_time_object - datetime.now()
+        
         notification_session = NotificationSession.objects.create(
             name=session_name,
-            scheduled_time=scheduled_time,
+            scheduled_time=scheduled_time_object,
             notification_template=notification_template,
         )
         session_id = notification_session.id
@@ -123,7 +139,7 @@ class StartNotificationView(GenericAPIView):
                 send_notification.apply_async(
                     args=[session_id, contact_id],
                     queue=f'{priority_group.lower()}_priority_queue',
-                    countdown=10,
+                    countdown=timedelta.total_seconds(),
                 )
         return Response({'message': 'Notification session started',
                          'session': {'id': session_id,
