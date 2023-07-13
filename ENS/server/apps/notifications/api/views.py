@@ -93,17 +93,6 @@ class StartNotificationView(GenericAPIView):
     @swagger_auto_schema(
         operation_id='start_notification',
         operation_description='Start of notification',
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'name': openapi.Schema(type=openapi.TYPE_STRING),
-                'scheduled_time': openapi.Schema(type=openapi.TYPE_STRING),
-            },
-            example={
-                'name': 'Session',
-                'scheduled_time': '2023-07-13 09:17:00',
-            },
-        )
     )
     def post(self, request: Request, uid: str, token: str) -> Response:
         notification_template_id = urlsafe_base64_decode(uid).decode()
@@ -119,11 +108,18 @@ class StartNotificationView(GenericAPIView):
             self.serializer_class(data=request.data)
         session_serializer.is_valid(raise_exception=True)
         session_name = session_serializer.data['name']
-        scheduled_time = session_serializer.data['scheduled_time']
+
+        scheduled_time = session_serializer.validated_data.get('scheduled_time')
         
-        scheduled_time_object = datetime.strptime(scheduled_time, '%Y-%m-%d %H:%M:%S')
-        timedelta = scheduled_time_object - datetime.now()
-        
+        if scheduled_time:
+            scheduled_time_object = datetime.strptime(scheduled_time, '%Y-%m-%d %H:%M:%S')
+            timedelta = (scheduled_time_object - datetime.now()).total_seconds()
+            response_message = f'Notification session will be started at {scheduled_time}'
+        else:
+            scheduled_time_object = None
+            timedelta = 0
+            response_message = 'Notification session started'
+
         notification_session = NotificationSession.objects.create(
             name=session_name,
             scheduled_time=scheduled_time_object,
@@ -139,11 +135,11 @@ class StartNotificationView(GenericAPIView):
                 send_notification.apply_async(
                     args=[session_id, contact_id],
                     queue=f'{priority_group.lower()}_priority_queue',
-                    countdown=timedelta.total_seconds(),
+                    countdown=timedelta,
                 )
-        return Response({'message': 'Notification session started',
-                         'session': {'id': session_id,
-                                     'name': session_name}},
+        return Response({'message': response_message,
+                        'session': {'id': session_id,
+                                    'name': session_name}},
                         status=status.HTTP_200_OK)
 
 

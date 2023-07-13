@@ -72,7 +72,7 @@ class SimpleNSsessionSerializer(ModelSerializer):
 
 class CustomNSessionSerializer(ModelSerializer):
     name = serializers.CharField(min_length=1, max_length=255)
-    scheduled_time = serializers.CharField(required=False)
+    scheduled_time = serializers.CharField(required=False, allow_null=True)
 
     class Meta:
         model = NotificationSession
