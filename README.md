@@ -1,7 +1,7 @@
 # 3 Cool Pet Projects:
 1. Pastebin Analog
 2. Emergency Alert System
-3. Web Crawler
+3. Messenger
  
 ### 1. Pastebin Analog
 Description: It is a platform through which users can create text blocks and share them with each other.
