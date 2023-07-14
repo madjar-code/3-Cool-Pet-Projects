@@ -33,6 +33,7 @@ SITE_ID = 1
 
 THIRD_PART_APPS = [
     'django_extensions',
+    # 'django_celery_beat',
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
