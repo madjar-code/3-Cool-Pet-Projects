@@ -49,26 +49,27 @@ def send_notification(session_id: str,
         template = notification_session.notification_template
         subject: str = template.render_title()
         body: str = template.render_text()
-        session_filter = NotificationSession.objects.filter(id=session_id)
+        # session_filter = NotificationSession.objects.filter(id=session_id)
         try:
-            session_filter.update(during_counter=F('during_counter') + 1)
+            # session_filter.update(during_counter=F('during_counter') + 1)
             send_notification_by_method(
                 notification_state.method, subject, body, contact)
             notification_state.status = StateStatusChoices.STATUS_READY
             notification_state.save()
-            session_filter.update(success_counter=F('success_counter') + 1)
+            # session_filter.update(success_counter=F('success_counter') + 1)
         except (SMTPException, TwilioException):
             notification_state.status = StateStatusChoices.STATUS_FAILED
             notification_state.save()
-            session_filter.update(success_counter=F('failed_counter') + 1)
+            # session_filter.update(success_counter=F('failed_counter') + 1)
         finally:
-            session_filter.update(during_counter=F('during_counter') - 1)
-            counters = session_filter.values('success_counter', 'failed_counter', 'all_counter').first()
-            success_counter = int(counters['success_counter'])
-            failed_counter = int(counters['failed_counter'])
-            all_counter = int(counters['all_counter'])
+            pass
+            # session_filter.update(during_counter=F('during_counter') - 1)
+            # counters = session_filter.values('success_counter', 'failed_counter', 'all_counter').first()
+            # success_counter = int(counters['success_counter'])
+            # failed_counter = int(counters['failed_counter'])
+            # all_counter = int(counters['all_counter'])
 
-            if all_counter > 0 and success_counter + failed_counter == all_counter:
-                session_filter.update(status=SessionStatusChoices.STATUS_READY)
-            elif all_counter > 0:
-                session_filter.update(status=SessionStatusChoices.STATUS_DURING)
+            # if all_counter > 0 and success_counter + failed_counter == all_counter:
+            #     session_filter.update(status=SessionStatusChoices.STATUS_READY)
+            # elif all_counter > 0:
+            #     session_filter.update(status=SessionStatusChoices.STATUS_DURING)
