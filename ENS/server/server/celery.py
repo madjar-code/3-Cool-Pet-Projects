@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 import os
 from celery import Celery
+from celery.schedules import crontab
 from kombu import Queue
 from server.settings import base
 
@@ -18,24 +19,6 @@ app.conf.task_queues = [
     high_priority_queue,
 ]
 
-# app.conf.task_queues = {
-#     'default': {
-#         'exchange': 'default',
-#         'exchange_type': 'direct',
-#         'routing_key': 'default',
-#     },
-#     'low_priority_queue': {
-#         'exchange': 'low_priority_queue',
-#         'exchange_type': 'direct',
-#         'routing_key': 'low_priority',
-#     },
-#     'high_priority_queue': {
-#         'exchange': 'high_priority_queue',
-#         'exchange_type': 'direct',
-#         'routing_key': 'high_priority',
-#     },
-# }
-
 app.conf.task_routes = {
     'notifications.tasks.send_notification': {
         'queue': lambda task, *args, **kwargs: (
@@ -48,3 +31,12 @@ app.conf.task_routes = {
 app.config_from_object("django.conf:settings", namespace="CELERY"),
 app.conf.broker_connection_retry_on_startup = True
 app.autodiscover_tasks(lambda: base.INSTALLED_APPS)
+
+
+beat_schedule = {
+    'schedule-print-session': {
+        'task': 'notifications.tasks.schedule_print_session',
+        'schedule': 60.0,
+        'options': {'expires': 60}
+    }
+}
