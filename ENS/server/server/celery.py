@@ -31,12 +31,3 @@ app.conf.task_routes = {
 app.config_from_object("django.conf:settings", namespace="CELERY"),
 app.conf.broker_connection_retry_on_startup = True
 app.autodiscover_tasks(lambda: base.INSTALLED_APPS)
-
-
-beat_schedule = {
-    'schedule-print-session': {
-        'task': 'notifications.tasks.schedule_print_session',
-        'schedule': 60.0,
-        'options': {'expires': 60}
-    }
-}
