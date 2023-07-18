@@ -1,3 +1,5 @@
+from datetime import timedelta
+from uuid import UUID
 from celery import shared_task, Task
 from celery.utils.log import get_task_logger
 from smtplib import SMTPException
@@ -23,6 +25,13 @@ from notifications.utils import (
 logger = get_task_logger(__name__)
 
 
+@shared_task(queue='default_queue')
+def periodic_counts(session_id: UUID):
+    for i in range(5):
+        logger.error(f'\n\n\n{session_id}\n\n\n')
+        timedelta(2)
+
+
 class SendException(Exception):
     """
     Raise SendException when there are
@@ -40,15 +49,15 @@ class BaseTaskWithRetry(Task):
 def send_notification_by_method(method: MethodChoices, subject: str,
                                 body: str, contact: Contact) -> None:
     if method == MethodChoices.EMAIL_METHOD:
-        dev_send_email_wrong(
+        dev_send_email(
             subject=subject, body=body, recipient_list=[contact.email])
     elif method == MethodChoices.PHONE_METHOD:
         dev_send_sms(body=body, phone_number=contact.phone)
 
 
-@shared_task(time_limit=20, base=BaseTaskWithRetry)
-def send_notification(session_id: str,
-                      contact_id: str) -> None:
+@shared_task(time_limit=5, base=BaseTaskWithRetry)
+def send_notification(session_id: UUID,
+                      contact_id: UUID) -> None:
     notification_session = NotificationSession.objects.filter(id=session_id).first()
     contact: Contact = Contact.objects.filter(id=contact_id).first()
     

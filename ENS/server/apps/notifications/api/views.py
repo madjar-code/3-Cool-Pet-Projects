@@ -27,7 +27,10 @@ from .serializers import (
     NTSerializer,
     CreateNTSerializer,
 )
-from notifications.tasks import send_notification
+from notifications.tasks import (
+    periodic_counts,
+    send_notification,
+)
 
 
 class ErrorMessages(str, Enum):
@@ -129,7 +132,12 @@ class StartNotificationView(GenericAPIView):
         
         notification_session.all_counter = Contact.objects.exclude(priority_group='Blacklist').count()
         notification_session.save()
-
+        
+        periodic_counts.apply_async(
+            args=[session_id],
+            # countdown=timedelta,
+        )
+        
         for contact_id, priority_group in Contact.objects.values_list('id', 'priority_group'):
             if priority_group in ('High', 'Low'):
                 send_notification.apply_async(
