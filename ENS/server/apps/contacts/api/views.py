@@ -50,7 +50,7 @@ class ErrorMessages(str, Enum):
 class ContactsListView(ListAPIView):
     serializer_class = SimpleContactSerializer
     # permission_classes = (IsAdminUser,)
-    throttle_classes = (GetThrottle,)
+    # throttle_classes = (GetThrottle,)
 
     queryset = Contact.active_objects.all()
 
@@ -62,7 +62,7 @@ class ContactsListView(ListAPIView):
 class ContactDetailsView(RetrieveAPIView):
     serializer_class = ContactSerializer
     # permission_classes = (IsAdminUser,)
-    throttle_classes = (GetThrottle,)
+    # throttle_classes = (GetThrottle,)
     queryset = Contact.active_objects.all()
     lookup_field = 'id'
 
@@ -88,7 +88,7 @@ class ContactDetailsView(RetrieveAPIView):
 class CreateContactView(CreateAPIView):
     serializer_class = CreateContactSerializer
     # permission_classes = (IsAdminUser,)
-    throttle_classes = (CreateThrottle,)
+    # throttle_classes = (CreateThrottle,)
 
     @swagger_auto_schema(operation_id='create_contact')
     def post(self, request: Request) -> Response:
@@ -101,7 +101,7 @@ class CreateContactView(CreateAPIView):
 class CreateMultiContactsView(CreateAPIView):
     serializer_class = CreateContactSerializer
     # permission_classes = (IsAdminUser,)
-    throttle_classes = (CreateThrottle,)
+    # throttle_classes = (CreateThrottle,)
 
     @swagger_auto_schema(
         operation_id='create_multiply_contacts',
@@ -196,7 +196,7 @@ class UpdateContactView(GenericAPIView):
 class UploadContactsSheetView(APIView):
     parser_classes = (MultiPartParser,)
     serializer_class = None
-    throttle_classes = (CreateThrottle,)
+    # throttle_classes = (CreateThrottle,)
 
     @swagger_auto_schema(
         operation_id='upload_sheet',
