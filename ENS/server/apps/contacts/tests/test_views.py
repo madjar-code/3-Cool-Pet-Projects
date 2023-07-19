@@ -1,4 +1,12 @@
+import os
 import uuid
+from openpyxl import Workbook
+from typing import (
+    List,
+    Any
+)
+from django.core.files.uploadedfile import\
+    SimpleUploadedFile
 from rest_framework import status
 from rest_framework.test import APITestCase
 from contacts.models import (
@@ -154,3 +162,70 @@ class TestContactViews(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertIn('error', response.data)
         self.assertEqual(response.data['error'], 'Contact with `id` not found')
+
+
+
+class TestUploadContactsSheetView(APITestCase):
+    def create_test_excel_file(self, data: List[List[Any]]) -> str:
+        wb = Workbook()
+        sheet = wb.active
+        for row_data in data:
+            sheet.append(row_data)
+        file_path = 'test_file.xlsx'
+        wb.save(file_path)
+        return file_path
+
+    def tearDown(self) -> None:
+        if os.path.exists('test_file.xlsx'):
+            os.remove('test_file.xlsx')
+
+    def test_upload_valid_excel_file(self) -> None:
+        data: List[List[Any]] = [
+            ['Name', 'Email', 'Phone', 'Priority Group'],
+            ['John', 'john@example.com', '+12125552368', 'Low'],
+            ['Alice', 'alice@example.com', '+12125552369', 'High'],
+        ]
+        file_path = self.create_test_excel_file(data)
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(f'/{API_PREFIX}/contacts/upload-excel/',
+                                        {'file': file}, format='multipart')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('contacts', response.data)
+        self.assertEqual(len(response.data['contacts']), 2)
+
+    def test_upload_invalid_excel_file(self) -> None:
+        data: List[List[Any]] = [
+            ['Name', 'Email', 'Phone', 'Priority Group'],
+            ['John', 'john@example.com', '+12125552368'],
+            ['Alice', 'alice@example.com', '+12125552369', 'High'],
+        ]
+        file_path = self.create_test_excel_file(data)
+
+        with open(file_path, 'rb') as file:
+            response = self.client.post(f'/{API_PREFIX}/contacts/upload-excel/',
+                                        {'file': file}, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('errors', response.data)
+        self.assertEqual(len(response.data['errors']), 1)
+
+    def test_upload_invalid_file_type(self) -> None:
+        data: List[List[Any]] = [
+            ['Name', 'Email', 'Phone', 'Priority Group'],
+        ]
+        file_path = self.create_test_excel_file(data)
+
+        with open(file_path, 'rb') as file:
+            file_with_invalid_extension = SimpleUploadedFile(
+                name='test_file.txt',
+                content=file.read(),
+                content_type='text/plain'
+            )
+            response = self.client.post(f'/{API_PREFIX}/contacts/upload-excel/',
+                                        {'file': file}, format='multipart')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('error', response.data)
+        self.assertEqual(response.data['error'],
+                         'Invalid file type. Only Excel files (.xlsx) are supported.')
