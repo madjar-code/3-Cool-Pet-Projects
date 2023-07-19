@@ -1,0 +1,15 @@
+django
+django-environ
+django-modeltranslation
+django-jazzmin
+djangorestframework
+drf-yasg
+django-cors-headers
+pillow
+mixer
+djangorestframework-simplejwt
+google-cloud-storage
+django-storages
+google-api-python-client
+django-redis
+coreapi
