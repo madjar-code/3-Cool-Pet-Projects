@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  server:
+    build:
+      context: ./server
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    env_file:
+      - server/server/.env
+    restart: on-failure
+    container_name: server
+    volumes:
+      - ./server:/app
+
+  redis:
+    image: redis:7.0.5-alpine
+    hostname: redis
+
+  frontend:
+    build:
+      context: ./client
+    ports:
+      - "3000:3000"
+    restart: on-failure
+    container_name: frontend
+    volumes:
+      - ./client:/app
